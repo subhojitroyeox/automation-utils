@@ -3,7 +3,7 @@ name: Publish to GitHub Packages
 on:
   push:
     branches:
-      - main  # Change this if your default branch is not 'main'
+      - main  # Make sure this matches your branch name
 
 jobs:
   publish:
@@ -18,19 +18,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-
-      - name: Configure GitHub Packages authentication
-        run: |
-          mkdir -p ~/.m2
-          echo "<settings>
-                  <servers>
-                    <server>
-                      <id>github</id>
-                      <username>${{ github.actor }}</username>
-                      <password>${{ secrets.GH_PAT }}</password>
-                    </server>
-                  </servers>
-                </settings>" > ~/.m2/settings.xml
+          server-id: github
+          settings-path: ${{ github.workspace }}
 
       - name: Publish package
         run: mvn deploy -DskipTests
