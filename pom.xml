@@ -69,12 +69,4 @@
       <url>https://maven.pkg.github.com/subhojitroyeox/automation-utils</url>
     </repository>
   </distributionManagement>
-
-  <servers>
-    <server>
-      <id>github</id>
-      <username>subhojitroyeox</username>  <!-- Your GitHub username -->
-      <password>${env.GITHUB_TOKEN}</password>  <!-- Using GITHUB_TOKEN from GitHub Actions -->
-    </server>
-  </servers>
 </project>
