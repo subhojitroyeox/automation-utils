@@ -3,7 +3,7 @@ name: Publish to GitHub Packages
 on:
   push:
     branches:
-      - main
+      - main  # Change this if you use a different branch
 
 jobs:
   publish:
@@ -21,7 +21,12 @@ jobs:
           server-id: github
           settings-path: ${{ github.workspace }}
 
+      - name: Configure Maven for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GH_PAT }}</password></server></servers></settings>" > ~/.m2/settings.xml
+
       - name: Publish package
         run: mvn deploy -DskipTests
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use default GitHub token
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Use the PAT
