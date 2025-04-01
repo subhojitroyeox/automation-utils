@@ -3,7 +3,7 @@ name: Publish to GitHub Packages
 on:
   push:
     branches:
-      - main  # Make sure this matches your branch name
+      - main
 
 jobs:
   publish:
@@ -24,4 +24,4 @@ jobs:
       - name: Publish package
         run: mvn deploy -DskipTests
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use default GitHub token
