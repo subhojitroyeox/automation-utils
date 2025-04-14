@@ -13,7 +13,7 @@ public class CommonFunctionUtils {
 	//protected WebDriver driver;
     private static WebDriverWait wait;
     private static WebDriver driver;
-    CommonFunctionUtils(WebDriver driver){
+    public CommonFunctionUtils(WebDriver driver){
     	CommonFunctionUtils.driver = driver;
     	wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
