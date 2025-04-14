@@ -12,10 +12,14 @@ public class CommonFunctionUtils {
 	
 	//protected WebDriver driver;
     private static WebDriverWait wait;
-
+    private static WebDriver driver;
+    CommonFunctionUtils(WebDriver driver){
+    	CommonFunctionUtils.driver = driver;
+    	wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    }
 
     // Click method with explicit wait
-    public static void elementClick(WebElement element, WebDriver driver) {
+    public static void elementClick(WebElement element) {
     	wait.until(ExpectedConditions.elementToBeClickable(element));
        // wait.until(ExpectedConditions.elementToBeClickable(element));
         SupportUtils.safeClick(element,driver,3);
@@ -38,37 +42,37 @@ public class CommonFunctionUtils {
     
     // open an app from side panel 
     
-    public static String launchAnApp(String appName, WebDriver driver) {
-    	elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img")), driver); // open side bar
+    public static String launchAnApp(String appName) {
+    	elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img"))); // open side bar
     	driver.findElement(By.xpath("//input[@id='appsearch']")).sendKeys(appName); //Search an app 
-    	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")), driver);
+    	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")));
     	return wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[@id='NavigationHeaderContainer_tempId']//span[contains(text(),'"+appName+"')]"))))
     			.getText();
     	
     }
     
     // Open left nav bar for any app
-    public static void openSideNavBar(String menuName, WebDriver driver) {
+    public static void openSideNavBar(String menuName) {
     	elementClick(
     			(driver.findElement
-    					(By.xpath("//div[contains(@id,'left-navigation')]//button[contains(@class,'sidenav-toggle')]"))),driver);
+    					(By.xpath("//div[contains(@id,'left-navigation')]//button[contains(@class,'sidenav-toggle')]"))));
     	
     	waitForVisibility(driver.findElement(By.xpath("//nav[contains(@class,'sidenav---expanded')]")));
     	elementClick(
-    			(driver.findElement(By.xpath("//*[contains(@name,'"+menuName+"') and contains(text(),'"+menuName+"')]"))),driver
+    			(driver.findElement(By.xpath("//*[contains(@name,'"+menuName+"') and contains(text(),'"+menuName+"')]")))
     					);
     }
     
     
  // select function
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem, WebDriver driver) {
- 		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")),driver);
+ 		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
  		try{
- 			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")),driver);
+ 			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
  		}
  		catch (Exception e) {
- 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")),driver);
- 			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")),driver);
+ 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
+ 			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
  			
  		}
  		
