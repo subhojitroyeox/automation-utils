@@ -65,7 +65,7 @@ public class CommonFunctionUtils {
     
     
  // select function
-    public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem, WebDriver driver) {
+    public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
  		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
  		try{
  			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
@@ -81,7 +81,7 @@ public class CommonFunctionUtils {
  	}
  	
  	// input functions
-    public static void addTextToTheInputField(String inputItem, String inputValue, WebDriver driver) {
+    public static void addTextToTheInputField(String inputItem, String inputValue) {
  		
  		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='text']")), inputValue);
  	}
