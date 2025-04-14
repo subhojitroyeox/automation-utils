@@ -11,34 +11,34 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class CommonFunctionUtils {
 	
 	//protected WebDriver driver;
-    private WebDriverWait wait;
+    private static WebDriverWait wait;
 
 
     // Click method with explicit wait
-    public void elementClick(WebElement element, WebDriver driver) {
+    public static void elementClick(WebElement element, WebDriver driver) {
     	wait.until(ExpectedConditions.elementToBeClickable(element));
        // wait.until(ExpectedConditions.elementToBeClickable(element));
         SupportUtils.safeClick(element,driver,3);
     }
 
     // Enter text method
-    public void enterText(WebElement element, String text) {
+    public static void enterText(WebElement element, String text) {
         wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
     }
 
     // Get text from element
-    public String getText(WebElement element) {
+    public static String getText(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element)).getText();
     }
 
     // Wait for an element to be visible
-    public void waitForVisibility(WebElement element) {
+    public static void waitForVisibility(WebElement element) {
         wait.until(ExpectedConditions.visibilityOf(element));
     }
     
     // open an app from side panel 
     
-    public String launchAnApp(String appName, WebDriver driver) {
+    public static String launchAnApp(String appName, WebDriver driver) {
     	elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img")), driver); // open side bar
     	driver.findElement(By.xpath("//input[@id='appsearch']")).sendKeys(appName); //Search an app 
     	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")), driver);
@@ -48,7 +48,7 @@ public class CommonFunctionUtils {
     }
     
     // Open left nav bar for any app
-    public void openSideNavBar(String menuName, WebDriver driver) {
+    public static void openSideNavBar(String menuName, WebDriver driver) {
     	elementClick(
     			(driver.findElement
     					(By.xpath("//div[contains(@id,'left-navigation')]//button[contains(@class,'sidenav-toggle')]"))),driver);
@@ -61,7 +61,7 @@ public class CommonFunctionUtils {
     
     
  // select function
-    public void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem, WebDriver driver) {
+    public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem, WebDriver driver) {
  		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")),driver);
  		try{
  			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")),driver);
@@ -77,7 +77,7 @@ public class CommonFunctionUtils {
  	}
  	
  	// input functions
-    public void addTextToTheInputField(String inputItem, String inputValue, WebDriver driver) {
+    public static void addTextToTheInputField(String inputItem, String inputValue, WebDriver driver) {
  		
  		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='text']")), inputValue);
  	}
