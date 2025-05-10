@@ -27,9 +27,25 @@ public class CommonFunctionUtils {
 
     // Enter text method
     public static void enterText(WebElement element, String text) {
+    	wait.until(ExpectedConditions.elementToBeClickable(element));
         wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
     }
-
+    
+    // Click operational button 
+    public static void clickOperationalButtons(String iconName) {
+		if(iconName.equalsIgnoreCase("create")) {
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-plus']//parent::button[@class='btn btn-primary']")));
+		}
+		if(iconName.equalsIgnoreCase("refresh")) {
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa-solid fa-arrows-rotate']//parent::button[@class='btn btn-primary']")));
+		}
+		if(iconName.equalsIgnoreCase("exportpdf")) {
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-file-pdf']//parent::button[@class='btn btn-primary']")));
+		}
+		if(iconName.equalsIgnoreCase("exportexcel")) {
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-file-excel']//parent::button[@class='btn btn-primary']")));
+		}
+    }
     // Get text from element
     public static String getText(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element)).getText();
