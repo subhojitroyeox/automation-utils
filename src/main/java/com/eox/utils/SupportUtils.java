@@ -121,23 +121,36 @@ public class SupportUtils {
 	    }
 	    
 	    //Retry for unwanted methods 
-	    public static void safeClick(WebElement element, WebDriver driver, int maxRetries) {
+	    public static void safeClick(WebElement element, WebDriver driver) {
+	    	int attempts = 0;
+	    	while (attempts < 10) {
+	    		try {
+	    			element.click(); // Try clicking normally
+	    			return; // If successful, exit method
+	    		} catch (Exception e) {
+	    			attempts++;
+	    			waitFor(50); // Wait before retrying
+	    		}
+	    	}
+	    	// If all retries fail, click using JavaScript
+	    	System.out.println("Click intercepted, using JavaScript executor...");
+	    	((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+	    }
+	    //Retry for unwanted methods -for safely insert
+	    public static void safeInsert(WebElement targer, String input, WebDriver driver) {
 	        int attempts = 0;
-	        while (attempts < maxRetries) {
+	        while (attempts < 10) {
 	            try {
-	                element.click(); // Try clicking normally
+	            	targer.sendKeys(input); // Try clicking normally
 	                return; // If successful, exit method
-	            } catch (ElementClickInterceptedException e) {
+	            } catch (Exception e) {
 	                attempts++;
-	                waitFor(200); // Wait before retrying
+	                waitFor(50); // Wait before retrying
 	            }
 	        }
-	        // If all retries fail, click using JavaScript
-	        System.out.println("Click intercepted, using JavaScript executor...");
-	        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
 	    }
 
-	    private static void waitFor(int millis) {
+	    static void waitFor(int millis) {
 	        try {
 	            Thread.sleep(millis);
 	        } catch (InterruptedException e) {

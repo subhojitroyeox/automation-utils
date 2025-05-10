@@ -21,14 +21,20 @@ public class CommonFunctionUtils {
     // Click method with explicit wait
     public static void elementClick(WebElement element) {
     	wait.until(ExpectedConditions.elementToBeClickable(element));
-       // wait.until(ExpectedConditions.elementToBeClickable(element));
-        SupportUtils.safeClick(element,driver,3);
+        SupportUtils.safeClick(element,driver);
     }
 
     // Enter text method
     public static void enterText(WebElement element, String text) {
-    	wait.until(ExpectedConditions.elementToBeClickable(element));
-        wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
+    	try {
+    		 wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
+    	}
+       catch(Exception e) {
+    	   wait.until(ExpectedConditions.visibilityOf(element));
+    	   SupportUtils.safeInsert(element,text,driver);
+       }
+
+    	
     }
     
     // Click operational button 
@@ -83,12 +89,14 @@ public class CommonFunctionUtils {
  // select function
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
  		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
+ 		
  		try{
  			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
  		}
  		catch (Exception e) {
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
- 			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
+ 			SupportUtils.waitFor(200);
+ 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownMenuItem+"')]/..")));
  			
  		}
  		
