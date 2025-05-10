@@ -3,7 +3,6 @@ package com.eox.utils;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -87,28 +86,22 @@ public class CommonFunctionUtils {
     }
     
     
-    public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) throws InterruptedException {
-        // Assuming SupportUtils.waitFor is equivalent to Thread.sleep for demonstration
-        Thread.sleep(500);
-        
-        // Click the dropdown to show its options using JavaScript
-        WebElement dropdown = driver.findElement(By.xpath("//*[contains(text(),'" + dropdownItem + "')]/..//div[contains(@class,'choices')]"));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", dropdown);
-
-        try {
-            Thread.sleep(200);
-            // Click the dropdown menu item using JavaScript
-            WebElement menuItem = driver.findElement(By.xpath("//*[text()='" + dropdownMenuItem + "']/.."));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", menuItem);
-        } catch (Exception e) {
-            // Trying alternative method if the first one fails
-            WebElement dropdownAgain = driver.findElement(By.xpath("//*[contains(text(),'" + dropdownItem + "')]/..//div[contains(@class,'choices')]"));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", dropdownAgain);
-
-            WebElement menuItemFallback = driver.findElement(By.xpath("//*[contains(text(),'" + dropdownMenuItem + "')]/.."));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", menuItemFallback);
-        }
-    }
+ // select function
+    public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
+    	SupportUtils.waitFor(500);
+ 		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
+ 		
+ 		try{
+ 			SupportUtils.waitFor(200);
+ 			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
+ 		}
+ 		catch (Exception e) {
+ 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
+ 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownMenuItem+"')]/..")));
+ 			
+ 		}
+ 		
+ 	}
  	
  	// input functions
     public static void addTextToTheInputField(String inputItem, String inputValue) {
