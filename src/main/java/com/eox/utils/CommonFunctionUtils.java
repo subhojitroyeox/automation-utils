@@ -42,11 +42,11 @@ public class CommonFunctionUtils {
     
     // open an app from side panel 
     
-    public static String launchAnApp(String appName) {
+    public static String launchAnApp(String appName, String tabName) {
     	elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img"))); // open side bar
     	driver.findElement(By.xpath("//input[@id='appsearch']")).sendKeys(appName); //Search an app 
     	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")));
-    	return wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[@id='NavigationHeaderContainer_tempId']//span[contains(text(),'"+appName+"')]"))))
+    	return wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[@id='NavigationHeaderContainer_tempId']//span[contains(text(),'"+tabName+"')]"))))
     			.getText();
     	
     }
