@@ -88,6 +88,7 @@ public class CommonFunctionUtils {
     
  // select function
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
+    	SupportUtils.waitFor(200);
  		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
  		
  		try{
@@ -95,12 +96,9 @@ public class CommonFunctionUtils {
  		}
  		catch (Exception e) {
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
- 			SupportUtils.waitFor(200);
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownMenuItem+"')]/..")));
  			
  		}
- 		
- 			
  		
  	}
  	
