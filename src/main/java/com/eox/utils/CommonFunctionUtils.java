@@ -88,7 +88,7 @@ public class CommonFunctionUtils {
     
  // select function
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
-    	SupportUtils.waitFor(200);
+    	SupportUtils.waitFor(500);
  		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
  		
  		try{
