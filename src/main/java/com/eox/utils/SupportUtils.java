@@ -139,6 +139,7 @@ public class SupportUtils {
 	    //Retry for unwanted methods -for safely insert
 	    public static void safeInsert(WebElement targer, String input, WebDriver driver) {
 	        int attempts = 0;
+	        waitFor(10);
 	        while (attempts < 10) {
 	            try {
 	            	targer.sendKeys(input); // Try clicking normally

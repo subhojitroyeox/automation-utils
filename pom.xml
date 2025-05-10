@@ -6,7 +6,7 @@
 
   <groupId>com.eox.utils</groupId>
   <artifactId>automation-utils</artifactId>
-  <version>1.0.23</version>
+  <version>0.0.231</version>
   <packaging>jar</packaging>
 
   <name>automation-utils</name>
