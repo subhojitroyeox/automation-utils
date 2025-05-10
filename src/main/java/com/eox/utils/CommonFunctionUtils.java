@@ -87,7 +87,7 @@ public class CommonFunctionUtils {
     }
     
     
-    public void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) throws InterruptedException {
+    public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) throws InterruptedException {
         // Assuming SupportUtils.waitFor is equivalent to Thread.sleep for demonstration
         Thread.sleep(500);
         
