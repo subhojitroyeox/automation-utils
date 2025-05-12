@@ -92,14 +92,13 @@ public class CommonFunctionUtils {
  		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
  		
  		try{
- 			SupportUtils.waitFor(200);
  			elementClick(driver.findElement(By.xpath("//*[text()='"+dropdownMenuItem+"']/..")));
  		}
  		catch (Exception e) {
  			SupportUtils.waitFor(200);
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
  			
- 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownMenuItem+"')]/..")));
+ 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownMenuItem+"')]/../..")));
  			
  		}
  		
