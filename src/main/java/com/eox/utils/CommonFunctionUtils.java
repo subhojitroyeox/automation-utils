@@ -59,7 +59,12 @@ public class CommonFunctionUtils {
 
     // Wait for an element to be visible
     public static void waitForVisibility(WebElement element) {
-        wait.until(ExpectedConditions.visibilityOf(element));
+    	wait.until(ExpectedConditions.visibilityOf(element));
+    }
+    
+    // Wait for an element to be visible
+    public static void waitForSpinnerGoesOff(WebElement element) {
+        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
     }
     
     // open an app from side panel 
@@ -98,15 +103,18 @@ public class CommonFunctionUtils {
  			SupportUtils.waitFor(200);
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//*[text()='"+dropdownMenuItem+"']/..")));
  		}
- 			
- 		
- 		
  	}
  	
  	// input functions
     public static void addTextToTheInputField(String inputItem, String inputValue) {
  		
  		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='text']")), inputValue);
+ 	}
+    
+    // input textarea fields 
+    public static void addTextToTheInputArea(String inputTitle, String inputValue) {
+    	
+ 		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputTitle+"')]/..//div[contains(@class,'ck-content')]")), inputValue);
  	}
 
 }
