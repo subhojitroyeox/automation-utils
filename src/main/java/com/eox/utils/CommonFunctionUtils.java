@@ -63,7 +63,7 @@ public class CommonFunctionUtils {
     }
     
     // Wait for an element to be visible
-    public static void waitForSpinnerGoesOff(WebElement element) {
+    public static void waitForSpinnerGoesOff() {
         wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
     }
     
