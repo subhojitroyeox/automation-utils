@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -23,7 +24,29 @@ public class CommonFunctionUtils {
     	wait.until(ExpectedConditions.elementToBeClickable(element));
         SupportUtils.safeClick(element,driver);
     }
-
+    
+    // Click any button - enabled --> updated on 30-05-2025
+    public static void activeButtonClick(String ButtonName) {
+    	driver.findElement(By.xpath("//button[contains(text(),'"+ButtonName+"')]"));
+    }
+    
+    // checkbox select - checked and unchecked  --> updated on 30-05-2025
+    public static void checkBoxClick(String contains) {
+    	if(!driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")).isSelected() ) {
+    		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")));
+    	}    	
+    }
+    public static void checkBoxUnchecked(String contains) {
+    	if(driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")).isSelected() ) {
+    		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")));
+    	}    	
+    }
+    
+    //radio button select --> added on 30-05-2025
+    public static void radioButtonSelect(String type) {
+    	elementClick(driver.findElement(By.xpath("//*[contains(text(),'Do you want to share your Netradyne data')]/following::input[contains(@id,'"+type+"')and @type='radio'] ")));
+    }
+    
     // Enter text method
     public static void enterText(WebElement element, String text) {
     	try {
@@ -116,5 +139,21 @@ public class CommonFunctionUtils {
     	
  		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputTitle+"')]/..//div[contains(@class,'ck-content')]")), inputValue);
  	}
+    
+    // Draw signature on signature pane
+    public void drawSignature() {
+        WebElement canvas = driver.findElement(By.xpath("//canvas[@class='signature-pad-canvas']"));
+        Actions drawAction = new Actions(driver);
+        int offsetX = 10; 
+        int offsetY = 50;
+        int endX = 150;
+        int endY = 10;
+        drawAction.moveToElement(canvas, offsetX, offsetY)
+                  .clickAndHold()
+                  .moveByOffset(endX, endY) 
+                  .release()
+                  .perform();
+    }
+
 
 }
