@@ -87,8 +87,17 @@ public class CommonFunctionUtils {
     
     // Wait for an element to be visible
     public static void waitForSpinnerGoesOff() {
-        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
-    	wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']"))));
+    	try {
+    		wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
+    	}
+        catch(Exception e) {
+        	wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
+        	if(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']")).isDisplayed()) {
+        		wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']"))));
+        	}
+        	
+        }
+    	
     }
     
     // open an app from side panel 
