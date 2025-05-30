@@ -27,7 +27,7 @@ public class CommonFunctionUtils {
     
     // Click any button - enabled --> updated on 30-05-2025
     public static void activeButtonClick(String ButtonName) {
-    	driver.findElement(By.xpath("//button[contains(text(),'"+ButtonName+"')]"));
+    	elementClick(driver.findElement(By.xpath("//button[contains(text(),'"+ButtonName+"')]")));
     }
     
     // checkbox select - checked and unchecked  --> updated on 30-05-2025
