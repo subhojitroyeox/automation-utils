@@ -22,8 +22,8 @@ public class HDOUtils {
     public static void fetchAllTabTexts(List<WebElement> element) {
     	for (WebElement ele:driver.findElements(By.xpath("//li[contains(@class,'page-item')]//button"))) {
     		System.out.println(ele.getText());
-    	}
-    	
+    	}    	
     }
 
+// Click on 
 }

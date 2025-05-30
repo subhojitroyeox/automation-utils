@@ -43,8 +43,8 @@ public class CommonFunctionUtils {
     }
     
     //radio button select --> added on 30-05-2025
-    public static void radioButtonSelect(String type) {
-    	elementClick(driver.findElement(By.xpath("//*[contains(text(),'Do you want to share your Netradyne data')]/following::input[contains(@id,'"+type+"')and @type='radio'] ")));
+    public static void radioButtonSelect(String type, String headerLavel) {
+    	elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+headerLavel+"')]/following::input[contains(@id,'"+type+"')and @type='radio'] ")));
     }
     
     // Enter text method
@@ -88,6 +88,7 @@ public class CommonFunctionUtils {
     // Wait for an element to be visible
     public static void waitForSpinnerGoesOff() {
         wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
+    	wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']"))));
     }
     
     // open an app from side panel 
