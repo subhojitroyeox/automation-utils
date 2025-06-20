@@ -125,7 +125,7 @@ public class SupportUtils {
 	    	int attempts = 0;
 	    	while (attempts < 10) {
 	    		try {
-	    			element.click(); // Try clicking normally
+	    			((JavascriptExecutor) driver).executeScript("arguments[0].click();", element); // Try clicking normally
 	    			return; // If successful, exit method
 	    		} catch (Exception e) {
 	    			attempts++;
@@ -134,7 +134,7 @@ public class SupportUtils {
 	    	}
 	    	// If all retries fail, click using JavaScript
 	    	System.out.println("Click intercepted, using JavaScript executor...");
-	    	((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+	    	
 	    }
 	    //Retry for unwanted methods -for safely insert
 	    public static void safeInsert(WebElement targer, String input, WebDriver driver) {

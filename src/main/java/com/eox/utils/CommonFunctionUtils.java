@@ -27,18 +27,21 @@ public class CommonFunctionUtils {
     
     // Click any button - enabled --> updated on 30-05-2025
     public static void activeButtonClick(String ButtonName) {
+    	wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath("//button[contains(text(),'"+ButtonName+"')]"))));
     	elementClick(driver.findElement(By.xpath("//button[contains(text(),'"+ButtonName+"')]")));
     }
     
     // checkbox select - checked and unchecked  --> updated on 30-05-2025
     public static void checkBoxClick(String contains) {
-    	if(!driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")).isSelected() ) {
-    		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")));
-    	}    	
+    	WebElement ele = driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/..//input[@type='checkbox']"));
+    	if(!ele.isSelected() ) {
+    		elementClick(ele);
+    	}  	
     }
     public static void checkBoxUnchecked(String contains) {
-    	if(driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")).isSelected() ) {
-    		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/../../..//input[@type='checkbox']")));
+    	WebElement ele = driver.findElement(By.xpath("//*[contains(text(),'"+contains+"')]/..//input[@type='checkbox']"));
+    	if(ele.isSelected() ) {
+    		elementClick(ele);
     	}    	
     }
     
@@ -84,15 +87,21 @@ public class CommonFunctionUtils {
     public static void waitForVisibility(WebElement element) {
     	wait.until(ExpectedConditions.visibilityOf(element));
     }
+    // Wait for an element to be visible
+    public static void waitForClickableElement(WebElement element) {
+    	wait.until(ExpectedConditions.visibilityOf(element));
+    	wait.until(ExpectedConditions.elementToBeClickable(element));
+    }
     
     // Wait for an element to be visible
     public static void waitForSpinnerGoesOff() {
     	try {
     		wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
     	}
-        catch(Exception e) {
+        catch(Exception e) {        	
         	wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@class='spinner']"))));
         	if(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']")).isDisplayed()) {
+        		wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']"))));
         		wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("div[@class='osjs-boot-splash_message']"))));
         	}
         	
