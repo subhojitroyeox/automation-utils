@@ -1,6 +1,8 @@
 package com.eox.utils;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -146,6 +148,14 @@ public class CommonFunctionUtils {
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//*[text()='"+dropdownMenuItem+"']/..")));
  		}
  	}
+    
+    // Multiple Selection from dropdown
+    public static void multiSelectFromDropdown(String dropdownItem, String[] optionList) {
+    	List<String> optionsList = Arrays.stream(optionList).toList();
+    	for(String optionText : optionsList) {
+    		selectItemFromDropdown(dropdownItem, optionText);
+    	}
+    }
  	
  	// input functions
     public static void addTextToTheInputField(String inputItem, String inputValue) {
