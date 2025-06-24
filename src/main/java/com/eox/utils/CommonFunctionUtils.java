@@ -14,11 +14,17 @@ public class CommonFunctionUtils {
 	//protected WebDriver driver;
     private static WebDriverWait wait;
     private static WebDriver driver;
-    public CommonFunctionUtils(WebDriver driver){
+    public CommonFunctionUtils(WebDriver driver, int waitTime){
     	CommonFunctionUtils.driver = driver;
-    	wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    	wait = new WebDriverWait(driver, Duration.ofSeconds(waitTime));
     }
-
+    
+    // Login to the application
+    public static void loginToApplication(String uname, String password) {
+    	CommonFunctionUtils.enterText(driver.findElement(By.id("username")),uname);
+		CommonFunctionUtils.enterText(driver.findElement(By.id("password")),password);
+		CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));
+    }
     // Click method with explicit wait
     public static void elementClick(WebElement element) {
     	wait.until(ExpectedConditions.elementToBeClickable(element));
@@ -65,18 +71,29 @@ public class CommonFunctionUtils {
     
     // Click operational button 
     public static void clickOperationalButtons(String iconName) {
-		if(iconName.equalsIgnoreCase("create")) {
-			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-plus']//parent::button[@class='btn btn-primary']")));
-		}
-		if(iconName.equalsIgnoreCase("refresh")) {
-			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa-solid fa-arrows-rotate']//parent::button[@class='btn btn-primary']")));
-		}
-		if(iconName.equalsIgnoreCase("exportpdf")) {
-			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-file-pdf']//parent::button[@class='btn btn-primary']")));
-		}
+    	if(iconName.equalsIgnoreCase("create")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-plus']//parent::button[@class='btn btn-primary']")));
+    	}
+    	if(iconName.equalsIgnoreCase("refresh")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa-solid fa-arrows-rotate']//parent::button[@class='btn btn-primary']")));
+    	}
+    	if(iconName.equalsIgnoreCase("exportpdf")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-file-pdf']//parent::button[@class='btn btn-primary']")));
+    	}
+    	if(iconName.equalsIgnoreCase("exportexcel")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-file-excel']//parent::button[@class='btn btn-primary']")));
+    	}
+    }
+    
+    // Click Dashbaord operation button 
+    public static void clickDashbaordOperationButtons(String iconName, String dashboardTitle) {
+    	if(iconName.equalsIgnoreCase("create")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//*[contains(@class,'fa-plus')]/parent::a")));
+    	}
 		if(iconName.equalsIgnoreCase("exportexcel")) {
-			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-file-excel']//parent::button[@class='btn btn-primary']")));
-		}
+				CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//*[text()='"+dashboardTitle+"']/..//i[contains(@class,'fa fa-file-exce')]")));
+				}
+		
     }
     // Get text from element
     public static String getText(WebElement element) {
