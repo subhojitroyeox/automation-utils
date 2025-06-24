@@ -3,6 +3,7 @@ package com.eox.utils;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -151,7 +152,7 @@ public class CommonFunctionUtils {
     
     // Multiple Selection from dropdown
     public static void multiSelectFromDropdown(String dropdownItem, String[] optionList) {
-    	List<String> optionsList = Arrays.stream(optionList).toList();
+    	List<String> optionsList = Arrays.stream(optionList).collect(Collectors.toList());
     	for(String optionText : optionsList) {
     		selectItemFromDropdown(dropdownItem, optionText);
     	}
