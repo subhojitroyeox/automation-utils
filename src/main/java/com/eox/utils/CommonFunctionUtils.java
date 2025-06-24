@@ -142,7 +142,7 @@ public class CommonFunctionUtils {
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//*[text()='"+dropdownMenuItem+"']/..")));
  		}
  		catch(Exception e) {
- 			SupportUtils.waitFor(200);
+ 			SupportUtils.waitFor(400);
  			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//*[text()='"+dropdownMenuItem+"']/..")));
  		}
  	}
