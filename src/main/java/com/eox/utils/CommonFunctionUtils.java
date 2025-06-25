@@ -24,7 +24,13 @@ public class CommonFunctionUtils {
     public static void loginToApplication(String uname, String password) {
     	CommonFunctionUtils.enterText(driver.findElement(By.id("username")),uname);
 		CommonFunctionUtils.enterText(driver.findElement(By.id("password")),password);
-		CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));
+		try {
+			CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));//this is for internal
+		}
+		catch (Exception e) {
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));//this is for HDO
+		}
+		
     }
     // Click method with explicit wait
     public static void elementClick(WebElement element) {
