@@ -3,6 +3,7 @@ package com.eox.utils;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -59,20 +60,32 @@ public class CommonFunctionUtils {
     // Enter text method
     public static void enterText(WebElement element, String text) {
     	try {
+    		wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
+    	}
+    	catch(Exception e) {
+    		wait.until(ExpectedConditions.visibilityOf(element));
+    		SupportUtils.safeInsert(element,text,driver);
+    	}    	
+    }
+    
+    // Enter text method
+    public static void enterKey(WebElement element, Keys text) {
+    	try {
     		 wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
     	}
        catch(Exception e) {
     	   wait.until(ExpectedConditions.visibilityOf(element));
-    	   SupportUtils.safeInsert(element,text,driver);
-       }
-
-    	
+    	   wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
+       }    	
     }
     
     // Click operational button 
     public static void clickOperationalButtons(String iconName) {
     	if(iconName.equalsIgnoreCase("create")) {
     		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa fa-plus']//parent::button[@class='btn btn-primary']")));
+    	}
+    	if(iconName.equalsIgnoreCase("create user")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa-solid fa-user-plus']//parent::button[@class='btn btn-primary']")));
     	}
     	if(iconName.equalsIgnoreCase("refresh")) {
     		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//i[@class='fa-solid fa-arrows-rotate']//parent::button[@class='btn btn-primary']")));
@@ -153,15 +166,11 @@ public class CommonFunctionUtils {
  // select function
     
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
-    	SupportUtils.waitFor(200);
- 		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
- 		try {
- 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//*[text()='"+dropdownMenuItem+"']/..")));
- 		}
- 		catch(Exception e) {
- 			SupportUtils.waitFor(400);
- 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//*[text()='"+dropdownMenuItem+"']/..")));
- 		}
+ 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
+ 			enterText(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), dropdownMenuItem);
+ 			SupportUtils.waitFor(20);
+ 			enterKey(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), Keys.ENTER);
+ 			
  	}
  	
  	// input functions
@@ -175,20 +184,61 @@ public class CommonFunctionUtils {
     	
  		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputTitle+"')]/..//div[contains(@class,'ck-content')]")), inputValue);
  	}
+    // App level special functions - like observer , esign etc 
     
+    // Select multiple observers 
+    public static void selectUsers(String userRole, String userName) {
+    	CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+userRole+"')]/..//div[contains(@class,'choices')]")));
+		CommonFunctionUtils.enterText(driver.findElement(By.xpath("//label[contains(text(),'"+userRole+"')]/..//div[contains(@class,'choices')]//input")), userName);
+		CommonFunctionUtils.waitForVisibility(driver.findElement(By.xpath("//label[contains(text(),'"+userRole+"')]/..//div[contains(@id,'choices')]//*[text()='"+userName+"']")));
+		SupportUtils.waitFor(1000);
+		CommonFunctionUtils.enterKey(driver.findElement(By.xpath("//label[contains(text(),'"+userRole+"')]/..//div[contains(@class,'choices')]//input")), Keys.ENTER);
+		
+    	
+    }
     // Draw signature on signature pane
-    public void drawSignature() {
+    public static void drawSignature() {
         WebElement canvas = driver.findElement(By.xpath("//canvas[@class='signature-pad-canvas']"));
         Actions drawAction = new Actions(driver);
-        int offsetX = 10; 
-        int offsetY = 50;
-        int endX = 150;
-        int endY = 10;
-        drawAction.moveToElement(canvas, offsetX, offsetY)
+        int startX = 50;  // Starting X-coordinate (relative to canvas left edge)
+        int startY = 50;  // Starting Y-coordinate (relative to canvas top edge)
+
+        // Define points to simulate drawing a letter 'S' or a squiggly line
+        int[][] path = {
+            {startX, startY},                 // Start point
+            {startX + 80, startY - 20},       // Move up-right
+            {startX + 60, startY -50},       // Move down-right
+            {startX + 40, startY + 40},       // Move down-left
+            {startX + 70, startY + 20},       // Move up-right again
+            {startX + 100, startY + 50}       // Finish point
+        };
+
+        // Move to the starting point and click and hold
+        drawAction.moveToElement(canvas, path[0][0], path[0][1])
                   .clickAndHold()
-                  .moveByOffset(endX, endY) 
-                  .release()
+                  .pause(100); // Small pause after holding, crucial for some canvases
+
+        // Iterate through the path points to simulate drawing a line
+        for (int i = 1; i < path.length; i++) {
+            // moveByOffset is relative to the *current* mouse position
+            // So, we need to calculate the offset from the previous point
+            int currentX = path[i][0];
+            int currentY = path[i][1];
+            int prevX = path[i-1][0];
+            int prevY = path[i-1][1];
+
+            int offsetX = currentX - prevX;
+            int offsetY = currentY - prevY;
+
+            drawAction.moveByOffset(offsetX, offsetY)
+                      .pause(50); // Pause between each segment to simulate drawing speed
+        }
+
+        // Release the mouse button to finish drawing
+        drawAction.release()
                   .perform();
+
+        System.out.println("Signature drawing attempt completed.");
     }
 
 
