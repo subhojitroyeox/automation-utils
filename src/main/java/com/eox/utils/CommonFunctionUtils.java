@@ -108,10 +108,11 @@ public class CommonFunctionUtils {
     public static void clickDashbaordOperationButtons(String iconName, String dashboardTitle) {
     	if(iconName.equalsIgnoreCase("create")) {
     		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//*[contains(@class,'fa-plus')]/parent::a")));
+    	}    	
+    	if(iconName.equalsIgnoreCase("exportexcel")) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//*[text()='"+dashboardTitle+"']/..//i[contains(@class,'fa fa-file-exce')]")));
     	}
-		if(iconName.equalsIgnoreCase("exportexcel")) {
-				CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//*[text()='"+dashboardTitle+"']/..//i[contains(@class,'fa fa-file-exce')]")));
-				}
+		
 		
     }
     // Get text from element
@@ -148,9 +149,11 @@ public class CommonFunctionUtils {
     // open an app from side panel 
     
     public static String launchAnApp(String appName, String tabName) {
+    	elementClick(driver.findElement(By.xpath("//div[contains(@class,'osjs-panel-my-home')]//i"))); // open side bar
     	elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img"))); // open side bar
     	driver.findElement(By.xpath("//input[@id='appsearch']")).sendKeys(appName); //Search an app 
     	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")));
+    	elementClick(driver.findElement(By.xpath("//div[contains(@class,'osjs-panel-my-home')]//i")));
     	return wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[@id='NavigationHeaderContainer_tempId']//span[contains(text(),'"+tabName+"')]"))))
     			.getText();
     	
@@ -172,17 +175,26 @@ public class CommonFunctionUtils {
  // select function
     
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
- 			elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]")));
- 			enterText(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), dropdownMenuItem);
- 			SupportUtils.waitFor(20);
+    		SupportUtils.waitFor(1000);
+    		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'form-control ui fluid selection dropdown')]")));
+ 			String temp=""; 			
+ 			for(char c: dropdownMenuItem.toCharArray()) {
+ 				temp+=c;
+ 				enterText(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), String.valueOf(c));
+ 				SupportUtils.waitFor(20);
+ 				}
  			enterKey(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), Keys.ENTER);
  			
  	}
  	
  	// input functions
     public static void addTextToTheInputField(String inputItem, String inputValue) {
+    	
+    	enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='text']")), inputValue);
+    }
+    public static void addEmailToTheInputField(String inputItem, String inputValue) {
  		
- 		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='text']")), inputValue);
+ 		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='email']")), inputValue);
  	}
     
     // input textarea fields 
