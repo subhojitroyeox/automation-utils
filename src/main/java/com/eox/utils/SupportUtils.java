@@ -97,24 +97,23 @@ public class SupportUtils {
 	    }
 		
 	    //-- upload any file to the application
-//		public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
-//	    	
-//	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
-//	    	attachment.click();
-//	    	
-//	    	String FilePath = ROOT_DIR + userFilePath;
-//	    	StringSelection filePathSelection2 = new StringSelection(userFilePath);
-//			StringSelection filePathSelection = new StringSelection(ROOT_DIR);
-//			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePathSelection, null);
-//			try {
-//				copyPasteAction();
-//				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePathSelection2, null);
-//				copyPasteAction();
-//			} catch (AWTException e) {
-//				System.err.println("Error during copy-paste action for file upload: " + e.getMessage());
-//			}
-//			
-//		}
+		public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
+	    	
+	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
+	    	attachment.click();
+
+	    	String filePath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "testData", userFilePath).toAbsolutePath().toString();
+
+	        File file = new File(filePath);
+	    	StringSelection filePathSelection = new StringSelection(filePath);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePathSelection, null);
+			try {
+				copyPasteAction();
+			} catch (AWTException e) {
+				System.err.println("Error during copy-paste action for file upload: " + e.getMessage());
+			}
+			
+		}
 		
 		public static void copyPasteAction() throws AWTException {
 
@@ -214,26 +213,26 @@ public class SupportUtils {
 	    }
 	    
 	    //upload any file to the application 
-	    public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
-	    	
-	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
-	    	
-	        String filePath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "testData", userFilePath).toAbsolutePath().toString();
-
-	        File file = new File(filePath);
-
-	        if (!file.exists()) {
-	            throw new IllegalArgumentException("File not found at the specified path: " + filePath +
-	                                               ". Please ensure the file exists in 'src/test/resources/testData/'");
-	        }
-
-	        try {
-	            //WebElement fileInputElement = driver.findElement(fileInputLocator);
-	        	attachment.sendKeys(filePath);
-	            System.out.println("Successfully attempted to upload file: " + userFilePath + " from path: " + filePath);
-	        } catch (Exception e) {
-	            System.err.println("Error during file upload for '" + userFilePath + "': " + e.getMessage());
-	            throw e;
-	        }
-	    }
+//	    public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
+//	    	
+//	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
+//	    	
+//	        String filePath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "testData", userFilePath).toAbsolutePath().toString();
+//
+//	        File file = new File(filePath);
+//
+//	        if (!file.exists()) {
+//	            throw new IllegalArgumentException("File not found at the specified path: " + filePath +
+//	                                               ". Please ensure the file exists in 'src/test/resources/testData/'");
+//	        }
+//
+//	        try {	
+//	            //WebElement fileInputElement = driver.findElement(fileInputLocator);
+//	        	attachment.sendKeys(filePath);
+//	            System.out.println("Successfully attempted to upload file: " + userFilePath + " from path: " + filePath);
+//	        } catch (Exception e) {
+//	            System.err.println("Error during file upload for '" + userFilePath + "': " + e.getMessage());
+//	            throw e;
+//	        }
+//	    }
 }
