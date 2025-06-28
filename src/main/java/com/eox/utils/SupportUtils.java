@@ -102,13 +102,17 @@ public class SupportUtils {
 	    	attachment.click();
 	    	
 	    	String FilePath = ROOT_DIR + userFilePath;
-			StringSelection filePathSelection = new StringSelection(FilePath);
+	    	StringSelection filePathSelection2 = new StringSelection(userFilePath);
+			StringSelection filePathSelection = new StringSelection(ROOT_DIR);
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePathSelection, null);
 			try {
+				copyPasteAction();
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePathSelection2, null);
 				copyPasteAction();
 			} catch (AWTException e) {
 				System.err.println("Error during copy-paste action for file upload: " + e.getMessage());
 			}
+			
 		}
 		
 		public static void copyPasteAction() throws AWTException {
