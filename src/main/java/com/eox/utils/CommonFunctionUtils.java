@@ -1,8 +1,10 @@
 package com.eox.utils;
 
 import java.time.Duration;
+import java.util.NoSuchElementException;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -207,7 +209,30 @@ public class CommonFunctionUtils {
     // input textarea fields 
     public static void addTextToTheInputArea(String inputTitle, String inputValue) {
     	
- 		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputTitle+"')]/..//div[contains(@class,'ck-content')]")), inputValue);
+ 		try {
+            // 1. Find the label by text
+            WebElement label = driver.findElement(By.xpath("//label[normalize-space(text())='" + inputTitle + "']"));
+
+            // 2. Traverse to the parent container, then find iframe inside it
+            WebElement container = label.findElement(By.xpath("./ancestor::div[contains(@class,'form-group')]"));
+            WebElement iframe = container.findElement(By.xpath(".//iframe"));
+
+            // 3. Switch to iframe
+            driver.switchTo().frame(iframe);
+
+            // 4. Set content inside the iframe's body using JavaScript
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("document.body.innerHTML = arguments[0];", inputValue);
+
+            // 5. Switch back to main content
+            driver.switchTo().defaultContent();
+
+        } catch (NoSuchElementException e) {
+        	enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputTitle+"')]/..//div[contains(@class,'ck-content')]")), inputValue);
+        } catch (Exception e) {
+            System.err.println("Unexpected error setting iframe content.");
+            e.printStackTrace();
+        }
  	}
     // App level special functions - like observer , esign etc 
     
