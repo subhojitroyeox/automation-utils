@@ -1,5 +1,10 @@
 package com.eox.utils;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +15,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -27,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SupportUtils {
 	//Read Property file and return the value
 		private static Properties properties;
+		 private static final String ROOT_DIR = System.getProperty("user.dir").concat("/src/test/resources/testData/");
 		public static String getProperty(String key) {
 			properties = new Properties();
 	        FileInputStream file;
@@ -42,41 +49,39 @@ public class SupportUtils {
 	        return properties.getProperty(key);
 	    }
 		
-		// Helper method to read test data from resource folder
-
-		public static Object getTestData(String filePath, String key) {
-	        try {
-	            ObjectMapper objectMapper = new ObjectMapper();
-	            JsonNode rootNode = objectMapper.readTree(new File("src/test/resources/testdata/" + filePath));
-
-	            if (rootNode.get(key).isArray()) {
-	                return objectMapper.convertValue(rootNode.get(key), List.class);
-	            }
-	            return rootNode.get(key);
-	        } catch (Exception e) {
-	            throw new RuntimeException("Error reading JSON data: " + e.getMessage());
-	        }
-	    }
+		//--- this is for extracting and getting test data as json format
 		
-		 // Generic Method to Extract Nested Values from JSON
-	    public static String getJsonValue(JsonNode jsonNode, String keyPath) {
-	        try {
-	            String[] keys = keyPath.split("\\."); // Split key path by "."
-	            JsonNode currentNode = jsonNode;
+	    //-- upload any file to the application
+		public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
+	    	
+	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
+	    	attachment.click();
+	    	
+	    	String FilePath = ROOT_DIR + userFilePath;
+			StringSelection filePathSelection = new StringSelection(FilePath);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePathSelection, null);
+			try {
+				copyPasteAction();
+			} catch (AWTException e) {
+				System.err.println("Error during copy-paste action for file upload: " + e.getMessage());
+			}
+		}
+		
+		public static void copyPasteAction() throws AWTException {
 
-	            for (String key : keys) {
-	                if (currentNode.has(key)) {
-	                    currentNode = currentNode.get(key);
-	                } else {
-	                    throw new RuntimeException("Key not found in JSON: " + keyPath);
-	                }
-	            }
-	            return currentNode.asText(); // Return the extracted value as String
-	        } catch (Exception e) {
-	            throw new RuntimeException("Error extracting JSON value for key path '" + keyPath + "': " + e.getMessage());
-	        }
-	    }
-	    
+			Robot robot = new Robot();
+			robot.delay(1000);
+			
+	        robot.keyPress(KeyEvent.VK_CONTROL);
+	        robot.keyPress(KeyEvent.VK_V);
+	        robot.keyRelease(KeyEvent.VK_V);
+	        robot.keyRelease(KeyEvent.VK_CONTROL);
+
+	        robot.delay(500);
+
+	        robot.keyPress(KeyEvent.VK_ENTER);
+	        robot.keyRelease(KeyEvent.VK_ENTER);
+		}
 	    // Generate Extend report 
 	    private static ExtentReports extent;
 

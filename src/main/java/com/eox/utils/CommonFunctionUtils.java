@@ -264,6 +264,11 @@ public class CommonFunctionUtils {
 
         System.out.println("Signature drawing attempt completed.");
     }
+    
+    // Upload any file to any application - 28-06-2025
+    public static void excelUpload(String labelName,String userFilePath) {
+    	SupportUtils.uploadFile(labelName, userFilePath, driver);
+    }
 
 
 }
