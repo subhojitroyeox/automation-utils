@@ -59,8 +59,9 @@ public class CommonFunctionUtils {
     }
     
     //radio button select --> added on 30-05-2025
-    public static void radioButtonSelect(String type, String headerLavel) {
-    	elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+headerLavel+"')]/following::input[contains(@id,'"+type+"')and @type='radio'] ")));
+    public static void radioButtonSelect( String headerLavel,String type) {
+    	elementClick(driver.findElement(By.xpath("//label[contains(text(),'"+headerLavel+"')]/..//*[contains(text(),'"+type+"')]/..//input")));
+    	//elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+headerLavel+"')]/following::input[contains(@id,'"+type+"')and @type='radio'] ")));
     }
     
     // Enter text method
@@ -179,11 +180,16 @@ public class CommonFunctionUtils {
     		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'form-control ui fluid selection dropdown')]")));
  			String temp=""; 			
  			for(char c: dropdownMenuItem.toCharArray()) {
+ 				if (c==' ') {
+ 					SupportUtils.waitFor(500);
+ 				}
  				temp+=c;
+ 				SupportUtils.waitFor(100);
  				enterText(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), String.valueOf(c));
- 				SupportUtils.waitFor(20);
+ 				
  				}
  			enterKey(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), Keys.ENTER);
+ 			
  			
  	}
  	
