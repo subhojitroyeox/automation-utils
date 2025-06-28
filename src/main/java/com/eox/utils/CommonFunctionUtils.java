@@ -154,8 +154,8 @@ public class CommonFunctionUtils {
     	elementClick(driver.findElement(By.xpath("//div[contains(@class,'osjs-panel-my-home')]//i"))); // open side bar
     	elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img"))); // open side bar
     	driver.findElement(By.xpath("//input[@id='appsearch']")).sendKeys(appName); //Search an app 
-    	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")));
     	elementClick(driver.findElement(By.xpath("//div[contains(@class,'osjs-panel-my-home')]//i")));
+    	elementClick(driver.findElement(By.xpath("//div[text()='"+appName+"']/ancestor::div[@class='app app-item']")));
     	return wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[@id='NavigationHeaderContainer_tempId']//span[contains(text(),'"+tabName+"')]"))))
     			.getText();
     	
@@ -268,6 +268,7 @@ public class CommonFunctionUtils {
     
     // Upload any file to any application - 28-06-2025
     public static void excelUpload(String labelName,String userFilePath) {
+    	
     	SupportUtils.uploadFile(labelName, userFilePath, driver);
     }
 
