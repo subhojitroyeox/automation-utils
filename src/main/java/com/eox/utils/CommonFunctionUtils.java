@@ -59,7 +59,7 @@ public class CommonFunctionUtils {
     }
     
     //radio button select --> added on 30-05-2025
-    public static void radioButtonSelect( String headerLavel,String type) {
+    public static void radioButtonSelect( String type,String headerLavel) {
     	
     		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+headerLavel+"')]/following::input[contains(@id,'"+type+"')and @type='radio'] ")));
     	

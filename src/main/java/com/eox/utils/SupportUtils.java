@@ -51,6 +51,50 @@ public class SupportUtils {
 		
 		//--- this is for extracting and getting test data as json format
 		
+		public static String getValueFromJson(String filePath, String key) throws IOException, IllegalArgumentException {
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        JsonNode rootNode;
+
+	        File jsonFile = new File(ROOT_DIR+"/"+filePath);
+	        if (!jsonFile.exists()) {
+	            throw new IOException("JSON file not found at: " + filePath);
+	        }
+
+	        try {
+	            rootNode = objectMapper.readTree(jsonFile);
+	        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+	            throw new com.fasterxml.jackson.core.JsonProcessingException(
+	                "Error decoding JSON from '" + filePath + "': " + e.getMessage()) {
+
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;};
+	        }
+
+	        String[] keys = key.split("\\.");
+	        JsonNode currentNode = rootNode;
+
+	        for (int i = 0; i < keys.length; i++) {
+	            String currentKeyPart = keys[i];
+
+	            if (currentNode.isObject()) {
+	                currentNode = currentNode.get(currentKeyPart);
+	                if (currentNode == null) {
+	                    throw new IllegalArgumentException(
+	                        "Key '" + currentKeyPart + "' not found in JSON path: '" + key + "'"
+	                    );
+	                }
+	            } else {
+	                String traversedPath = String.join(".", java.util.Arrays.copyOfRange(keys, 0, i));
+	                throw new IllegalArgumentException(
+	                    "Cannot access key '" + currentKeyPart + "' on a non-object value at path part: '" + traversedPath + "'"
+	                );
+	            }
+	        }
+	        return currentNode.asText();
+	    }
+		
 	    //-- upload any file to the application
 		public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
 	    	
