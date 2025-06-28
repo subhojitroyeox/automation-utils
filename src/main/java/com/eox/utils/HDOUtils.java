@@ -32,8 +32,8 @@ public class HDOUtils {
     }
     
  // input functions
-	public static void openTiles(String tilesTitle) { 		
-    	CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//a[contains(@title,'"+tilesTitle+"')]")));
+	public static void openTiles(String tilesTitle, String tilesButtonName) { 		
+    	CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//a[contains(@title,'"+tilesTitle+"') and contains(normalize-space(), '"+tilesButtonName+"')]")));
     	CommonFunctionUtils.waitForVisibility(driver.findElement(By.xpath("//span[text()='"+tilesTitle+"' and contains(@class,'k-breadcrumb-item-text')]")));
 }
 	
