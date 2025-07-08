@@ -99,7 +99,7 @@ public class SupportUtils {
 	    //-- upload any file to the application
 		public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
 	    	
-	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
+	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())="+labelName+"]/following::a[contains(@class, 'browse')][1]"));
 	    	attachment.click();
 
 	    	String filePath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "testData", userFilePath).toAbsolutePath().toString();

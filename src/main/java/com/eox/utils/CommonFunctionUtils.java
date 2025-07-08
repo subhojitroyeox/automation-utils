@@ -28,15 +28,23 @@ public class CommonFunctionUtils {
     // Login to the application
     public static void loginToApplication(String uname, String password) {
     	CommonFunctionUtils.enterText(driver.findElement(By.id("username")),uname);
-		CommonFunctionUtils.enterText(driver.findElement(By.id("password")),password);
-		try {
-			CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));//this is for internal
-		}
-		catch (Exception e) {
-			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));//this is for HDO
-		}
-		
+    	CommonFunctionUtils.enterText(driver.findElement(By.id("password")),password);
+    	try {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));//this is for internal
+    	}
+    	catch (Exception e) {
+    		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));//this is for HDO
+    	}
+    	
     }
+    
+    // Login to the application - temp fix for HDO  - 08-07-2025
+    public static void loginToApplication(String uname, String password,String productName) {
+    	CommonFunctionUtils.enterText(driver.findElement(By.id("username")),uname);
+		CommonFunctionUtils.enterText(driver.findElement(By.id("password")),password);
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));//this is for internal
+    }
+    
     // Click method with explicit wait
     public static void elementClick(WebElement element) {
     	wait.until(ExpectedConditions.elementToBeClickable(element));
@@ -182,15 +190,15 @@ public class CommonFunctionUtils {
  // select function
     
     public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
-    		SupportUtils.waitFor(1000);
+    		SupportUtils.waitFor(1500);
     		elementClick(driver.findElement(By.xpath("//*[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'form-control ui fluid selection dropdown')]")));
  			String temp=""; 			
  			for(char c: dropdownMenuItem.toCharArray()) {
  				if (c==' ') {
- 					SupportUtils.waitFor(500);
+ 					SupportUtils.waitFor(600);
  				}
  				temp+=c;
- 				SupportUtils.waitFor(100);
+ 				SupportUtils.waitFor(200);
  				enterText(driver.findElement(By.xpath("//label[contains(text(),'"+dropdownItem+"')]/..//div[contains(@class,'choices')]//input")), String.valueOf(c));
  				
  				}
@@ -212,14 +220,47 @@ public class CommonFunctionUtils {
     // input textarea fields -- updated on 01-07-2025
     public static void addTextToTheInputArea(String inputTitle, String inputValue) {
     	
+    	try {
+    		// 1. Find the label by text
+    		WebElement label = driver.findElement(By.xpath("//label[normalize-space(text())='" + inputTitle + "']"));
+    		
+    		// 2. Traverse to the parent container, then find iframe inside it
+    		WebElement container = label.findElement(By.xpath("./ancestor::div[contains(@class,'form-group')]"));
+    		WebElement iframe = container.findElement(By.xpath(".//iframe"));
+    		
+    		// 3. Switch to iframe
+    		driver.switchTo().frame(iframe);
+    		
+    		// 4. Set content inside the iframe's body using JavaScript
+    		JavascriptExecutor js = (JavascriptExecutor) driver;
+    		String script =
+    				"var p = document.body.querySelector('p');" +
+    						"if (!p) { p = document.createElement('p'); document.body.appendChild(p); }" +
+    						"p.textContent = arguments[0];";
+    		js.executeScript(script, inputValue);
+    		
+    		// 5. Switch back to main content
+    		driver.switchTo().defaultContent();
+    		
+    	} catch (NoSuchElementException e) {
+    		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputTitle+"')]/..//div[contains(@class,'ck-content')]")), inputValue);
+    	} catch (Exception e) {
+    		System.err.println("Unexpected error setting iframe content.");
+    		e.printStackTrace();
+    	}
+    }
+    
+    // input textarea fields helpdesk -- updated on 01-07-2025
+    public static void addTextToTheInputArea(String inputTitle, String inputValue, Boolean isCollapsible) {
+    	if(isCollapsible) {
+    		
+    	}
+    	
  		try {
             // 1. Find the label by text
-            WebElement label = driver.findElement(By.xpath("//label[normalize-space(text())='" + inputTitle + "']"));
+            WebElement iframe = driver.findElement(By.xpath("//span[normalize-space() = '"+inputTitle+"']/../..//iframe"));
 
-            // 2. Traverse to the parent container, then find iframe inside it
-            WebElement container = label.findElement(By.xpath("./ancestor::div[contains(@class,'form-group')]"));
-            WebElement iframe = container.findElement(By.xpath(".//iframe"));
-
+            
             // 3. Switch to iframe
             driver.switchTo().frame(iframe);
 
