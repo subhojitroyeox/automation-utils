@@ -4,8 +4,11 @@ import java.time.Duration;
 import java.util.NoSuchElementException;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -338,6 +341,120 @@ private static String escapeForXPathLiteral(String input) {
             return "'" + input + "'";
         }
     }
+
+
+	// This is for listview purpose - 08-07-2025
+
+
+/**
+     * Searches for a record in a list view and performs an action on it.
+     * This method locates the list view by its ID, searches for the record by its name,
+     * and performs the specified action (click or double-click) on the record.
+     * @param listViewId (the ID of the list view element)
+     * @param recordName (the name of the record to search for)
+     * @param action ("edit", "delete", etc.)
+     * @param actionType ("click" or "doubleClick")
+     * @throws NoSuchElementException if the record is not found.
+     * @author harshakr
+     */
+    public static void searchAndSelectListViewRecord(String listViewId, String recordName, String action, String actionType) {
+        try {
+            WebElement listViewEle = driver.findElement(By.id(listViewId));
+            WebElement searchInput = listViewEle.findElement(By.cssSelector(".grid-serach-input")); 
+
+            searchInput.clear();
+            searchInput.sendKeys(recordName);
+
+            // Optional wait to allow UI to process the search
+            SupportUtils.waitFor(1000); 
+
+            // Wait for the record to appear in the first row
+            By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(recordLocator));
+
+            WebElement record = driver.findElement(recordLocator);
+            if (record.isDisplayed()) {
+                new Actions(driver).moveToElement(record).perform(); // Hover over the record
+                
+                if(actionType == "click") {
+                    clickListViewActionButton(action); // Click the corresponding action button
+                }else if(actionType == "doubleClick") {
+                    elementDoubleClick(record); // Double click the record
+                } else {
+                    System.out.println("Invalid action type specified: " + actionType);
+                }
+                
+            } else {
+                System.out.println("Record is not visible in the list view: " + recordName);
+            }
+
+        } catch (NoSuchElementException e) {
+            System.out.println("No record found with name: " + recordName);
+        } catch (TimeoutException e) {
+            System.out.println("Timeout while waiting for record: " + recordName);
+        } catch (StaleElementReferenceException e) {
+            System.out.println("Stale element reference while searching for record: " + recordName);
+        } catch (ElementNotInteractableException e) {
+            System.out.println("Element not interactable while searching for record: " + recordName);
+        } catch (UnsupportedOperationException e) {
+            System.out.println("Unsupported operation while searching for record: " + recordName);
+        } catch (Exception e) {
+            System.out.println("Error while searching for record: " + e.getMessage());
+        }
+    }
+
+    
+    /**
+     * Clicks an action button in the list view.
+     * This method first checks if the "Show more options" button is displayed,
+     * clicks it if available, and then clicks the specified action button.
+     * If the "Show more options" button is not displayed, it directly attempts to click
+     * the specified action button.
+     * @param actionButtonName (the name of the action button to click like "Edit", "Delete", etc.)
+     * @throws NoSuchElementException if the action button is not found.
+     * @throws TimeoutException if the action button is not clickable within the wait time.
+     * @throws StaleElementReferenceException if the action button reference becomes stale.
+     * @throws ElementNotInteractableException if the action button is not interactable.
+     * @throws UnsupportedOperationException if the operation is not supported.
+     * @throws Exception for any other unexpected errors.
+     * 
+     * @author harshakr
+     */
+    public static void clickListViewActionButton(String actionButtonName) {
+        final String showMoreOptionsXpath = "//button[@title='Show more options']";
+
+        try {
+            // Wait for the first row in the grid to appear
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//tr[@data-grid-row-index='0']")));
+
+            // Check and click "Show more options" button if displayed
+            WebElement moreOptionsButton = driver.findElement(By.xpath(showMoreOptionsXpath));
+            if (moreOptionsButton.isDisplayed()) {
+            	elementClick(moreOptionsButton);
+                SupportUtils.waitFor(1000); // Give time for action buttons to load
+            } else {    
+                System.out.println("Show more options button is not displayed.");
+            }
+
+            // Find and click the desired action button
+            elementClick(driver.findElement(By.xpath("//button[@title='"+ actionButtonName+ "' and contains(@class, 'actionButtons')]")));
+            
+
+        } catch (NoSuchElementException e) {
+            System.out.println("No action button found in the list view.");
+        } catch (TimeoutException e) {
+            System.out.println("Timeout while waiting for record: " + actionButtonName);
+        } catch (StaleElementReferenceException e) {
+            System.out.println("Stale element reference while getting action button in the list view.");
+        } catch (ElementNotInteractableException e) {
+            System.out.println("Element not interactable while getting action button in the list view.");
+        } catch (UnsupportedOperationException e) {
+            System.out.println("Unsupported operation while getting action button in the list view.");
+        } catch (Exception e) {
+            System.out.println("Error while getting action button in the list view: " + e.getMessage());
+        }
+    }
+
 
 
 
