@@ -206,7 +206,7 @@ public class CommonFunctionUtils {
  		enterText(driver.findElement(By.xpath("//*[contains(text(),'"+inputItem+"')]/..//input[@type='email']")), inputValue);
  	}
     
-    // input textarea fields 
+    // input textarea fields -- updated on 01-07-2025
     public static void addTextToTheInputArea(String inputTitle, String inputValue) {
     	
  		try {
@@ -222,7 +222,11 @@ public class CommonFunctionUtils {
 
             // 4. Set content inside the iframe's body using JavaScript
             JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("document.body.innerHTML = arguments[0];", inputValue);
+            String script =
+                    "var p = document.body.querySelector('p');" +
+                    "if (!p) { p = document.createElement('p'); document.body.appendChild(p); }" +
+                    "p.textContent = arguments[0];";
+                js.executeScript(script, inputValue);
 
             // 5. Switch back to main content
             driver.switchTo().defaultContent();
@@ -234,6 +238,13 @@ public class CommonFunctionUtils {
             e.printStackTrace();
         }
  	}
+    
+ // Double click method with explicit wait
+    public static void elementDoubleClick(WebElement element) {        
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        Actions action = new Actions(driver);
+        action.moveToElement(element).doubleClick().perform();
+    }
     // App level special functions - like observer , esign etc 
     
     // Select multiple observers 
@@ -294,8 +305,40 @@ public class CommonFunctionUtils {
     // Upload any file to any application - 28-06-2025
     public static void excelUpload(String labelName,String userFilePath) {
     	
-    	SupportUtils.uploadFile(labelName, userFilePath, driver);
+    	SupportUtils.uploadFile(escapeForXPathLiteral(labelName), userFilePath, driver);
     }
+    
+    
+    
+    //Internal purpose for string 
+
+private static String escapeForXPathLiteral(String input) {
+        if (input == null) {
+            return "''"; // XPath empty string
+        }
+
+        boolean hasSingleQuote = input.contains("'");
+        boolean hasDoubleQuote = input.contains("\"");
+
+        if (hasSingleQuote && hasDoubleQuote) {
+            // Use XPath concat() if both quotes are present
+            StringBuilder result = new StringBuilder("concat(");
+            String[] parts = input.split("\"", -1); // split at each double quote
+
+            for (int i = 0; i < parts.length; i++) {
+                if (i > 0)
+                    result.append(", '\"', ");
+                result.append("'").append(parts[i].replace("'", "''")).append("'");
+            }
+            result.append(")");
+            return result.toString();
+        } else if (hasSingleQuote) {
+            return "\"" + input + "\"";
+        } else {
+            return "'" + input + "'";
+        }
+    }
+
 
 
 }
