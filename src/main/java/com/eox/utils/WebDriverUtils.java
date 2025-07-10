@@ -18,7 +18,7 @@ public class WebDriverUtils {
 		options.addArguments("--start-maximized");
 
 		// 3. Incognito Mode: Open Chrome in incognito mode.
-		options.addArguments("--incognito");
+		//options.addArguments("--incognito");
 
 		// 4. Disable Infobars: Prevents "Chrome is being controlled by automated test software" bar.
 		options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
