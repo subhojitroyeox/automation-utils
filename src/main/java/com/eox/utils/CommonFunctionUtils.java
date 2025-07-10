@@ -393,8 +393,7 @@ private static String escapeForXPathLiteral(String input) {
      * and performs the specified action (click or double-click) on the record.
      * @param listViewId (the ID of the list view element)
      * @param recordName (the name of the record to search for)
-     * @param action ("edit", "delete", etc.)
-     * @param actionType ("click" or "doubleClick")
+     * @param actionType ("edit", "delete", "doubleClick")
      * @throws NoSuchElementException if the record is not found.
      * @author harshakr
      */
@@ -403,8 +402,8 @@ private static String escapeForXPathLiteral(String input) {
         	elementClick(driver.findElement(By.xpath("//div[@class='k-grid-custom-search']//input[contains(@placeholder, '"+SearchPlaceHolderName+"') ]")));
         	driver.findElement(By.xpath("//div[@class='k-grid-custom-search']//input[contains(@placeholder, '"+SearchPlaceHolderName+"') ]")).sendKeys(recordName);
         	// Optional wait to allow UI to process the search
-            wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//img[contains(@src, 'gridLoader.85a7cf4bc3100a87dc1e70e4ae78cd50c.svg')]"))));
-
+            //wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//img[contains(@src, 'gridLoader.85a7cf4bc3100a87dc1e70e4ae78cd50c.svg')]"))));
+        	SupportUtils.waitFor(4000);
             // Wait for the record to appear in the first row
             By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
             wait.until(ExpectedConditions.visibilityOfElementLocated(recordLocator));
