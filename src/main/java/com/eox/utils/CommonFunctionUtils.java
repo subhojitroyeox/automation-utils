@@ -398,16 +398,12 @@ private static String escapeForXPathLiteral(String input) {
      * @throws NoSuchElementException if the record is not found.
      * @author harshakr
      */
-    public static void searchAndSelectListViewRecord(String listViewId, String recordName, String action, String actionType) {
+    public static void searchAndSelectListViewRecord(String SearchPlaceHolderName, String recordName, String actionType) {
         try {
-            WebElement listViewEle = driver.findElement(By.id(listViewId));
-            WebElement searchInput = listViewEle.findElement(By.cssSelector(".grid-serach-input")); 
-
-            searchInput.clear();
-            searchInput.sendKeys(recordName);
-
-            // Optional wait to allow UI to process the search
-            SupportUtils.waitFor(1000); 
+        	elementClick(driver.findElement(By.xpath("//div[@class='k-grid-custom-search']//input[contains(@placeholder, '"+SearchPlaceHolderName+"') ]")));
+        	driver.findElement(By.xpath("//div[@class='k-grid-custom-search']//input[contains(@placeholder, '"+SearchPlaceHolderName+"') ]")).sendKeys(recordName);
+        	// Optional wait to allow UI to process the search
+            SupportUtils.waitFor(10000); 
 
             // Wait for the record to appear in the first row
             By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
@@ -417,8 +413,10 @@ private static String escapeForXPathLiteral(String input) {
             if (record.isDisplayed()) {
                 new Actions(driver).moveToElement(record).perform(); // Hover over the record
                 
-                if(actionType == "click") {
-                    clickListViewActionButton(action); // Click the corresponding action button
+                if(actionType == "edit") {
+                	clickListViewActionButton(actionType); // Click the corresponding action button
+                }if(actionType == "delete") {
+                    clickListViewActionButton(actionType); // Click the corresponding action button
                 }else if(actionType == "doubleClick") {
                     elementDoubleClick(record); // Double click the record
                 } else {
