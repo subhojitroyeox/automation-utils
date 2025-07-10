@@ -403,7 +403,7 @@ private static String escapeForXPathLiteral(String input) {
         	elementClick(driver.findElement(By.xpath("//div[@class='k-grid-custom-search']//input[contains(@placeholder, '"+SearchPlaceHolderName+"') ]")));
         	driver.findElement(By.xpath("//div[@class='k-grid-custom-search']//input[contains(@placeholder, '"+SearchPlaceHolderName+"') ]")).sendKeys(recordName);
         	// Optional wait to allow UI to process the search
-            SupportUtils.waitFor(10000); 
+            wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//img[contains(@src, 'gridLoader.85a7cf4bc3100a87dc1e70e4ae78cd50c.svg')]"))));
 
             // Wait for the record to appear in the first row
             By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
