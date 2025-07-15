@@ -1,13 +1,19 @@
 package com.eox.utils;
-
+import java.io.File;
+import java.io.InputStream;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class HDOUtils {
 	//protected WebDriver driver;
@@ -19,11 +25,16 @@ public class HDOUtils {
     }
     
  // Click method with explicit wait
-    public static void fetchAllTabTexts(List<WebElement> element) {
-    	for (WebElement ele:driver.findElements(By.xpath("//li[contains(@class,'page-item')]//button"))) {
-    		System.out.println(ele.getText());
-    	}    	
-    }
+    public static boolean readTilesRolesBasis(String roleName, String jsonFilePath) {
+    	ArrayList<String> allTabTitle= new ArrayList<>();
+    	for (WebElement ele:driver.findElements(By.xpath("//*[@class='card-title']"))) {
+    		allTabTitle.add(ele.getText());
+    	}
+    	getMenuItemsByRole("roleKey", "jsonFilePath");
+    	return SupportUtils.validateListByPosition(getMenuItemsByRole("roleKey", "jsonFilePath"), allTabTitle);
+    	
+    }      
+    
     // Login to the HDO application
     public static void loginToApplication(String uname, String password) {
     	CommonFunctionUtils.enterText(driver.findElement(By.id("username")),uname);
@@ -54,6 +65,37 @@ public class HDOUtils {
 		public static void hdoClickActionsButtons(String email,String buttonName) {
 			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//td[text()='"+email+"']/..//*[text()='"+buttonName+"']/parent::button")));
 		}
+		
+		
+		// Validate Roles wise tiles
+	    private static ArrayList<String> getMenuItemsByRole(String roleKey, String jsonFilePath) {
+	        ArrayList<String> result = new ArrayList<>();
+
+	        try {
+	        	ClassLoader classLoader = HDOUtils.class.getClassLoader();
+	        	InputStream inputStream = classLoader.getResourceAsStream("testdata/"+ jsonFilePath+"/");
+	        	if (inputStream == null) {
+	                throw new IllegalArgumentException("roles.json not found in testdata folder");
+	            }
+
+	        	ObjectMapper mapper = new ObjectMapper();
+	            Map<String, Map<String, ArrayList<String>>> jsonData = mapper.readValue(
+	                    inputStream,
+	                    new TypeReference<Map<String, Map<String, ArrayList<String>>>>() {}
+	            );
+
+	            // Extract roles map
+	            Map<String, ArrayList<String>> rolesMap = jsonData.get("roles");
+	            if (rolesMap != null && rolesMap.containsKey(roleKey)) {
+	                result = rolesMap.get(roleKey);
+	            }
+
+	        } catch (Exception e) {
+	            System.err.println("Error parsing JSON: " + e.getMessage());
+	        }
+	        
+	        return result;	        
+	    }				
 	}
 	
 	

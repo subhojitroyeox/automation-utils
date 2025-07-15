@@ -11,8 +11,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -30,6 +33,7 @@ import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.aventstack.extentreports.reporter.configuration.ViewName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class SupportUtils {
 	//Read Property file and return the value
@@ -212,27 +216,120 @@ public class SupportUtils {
 	        }
 	    }
 	    
-	    //upload any file to the application 
-//	    public static void uploadFile(String labelName,String userFilePath, WebDriver driver) {
-//	    	
-//	    	WebElement attachment = driver.findElement(By.xpath("//label[normalize-space(text())='"+labelName+"']/following::a[contains(@class, 'browse')][1]"));
-//	    	
-//	        String filePath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "testData", userFilePath).toAbsolutePath().toString();
-//
-//	        File file = new File(filePath);
-//
-//	        if (!file.exists()) {
-//	            throw new IllegalArgumentException("File not found at the specified path: " + filePath +
-//	                                               ". Please ensure the file exists in 'src/test/resources/testData/'");
-//	        }
-//
-//	        try {	
-//	            //WebElement fileInputElement = driver.findElement(fileInputLocator);
-//	        	attachment.sendKeys(filePath);
-//	            System.out.println("Successfully attempted to upload file: " + userFilePath + " from path: " + filePath);
-//	        } catch (Exception e) {
-//	            System.err.println("Error during file upload for '" + userFilePath + "': " + e.getMessage());
-//	            throw e;
-//	        }
-//	    }
+	    /**
+	     * A utility method to read values from a JSON file that contains a root-level array.
+	     * It features an internal cache to avoid reading the same file multiple times.
+	     */
+	    private static final Map<String, ArrayNode> cachedJsonData = new HashMap<>();
+	    private static final ObjectMapper objectMapper = new ObjectMapper();
+	    
+	    /**
+	     * Retrieves a string value from a specific object within a JSON file.
+	     * The file is expected to contain a JSON array at its root. It will be loaded
+	     * and cached on the first call for a given file path.
+	     *
+	     * This optimized version uses Jackson's built-in JSON Pointer support for robust
+	     * and efficient path traversal.
+	     *
+	     * Example Usage:
+	     * String city = JsonUtil.getValue("src/test/resources/users.json", 0, "address.city");
+	     * String itemName = JsonUtil.getValue("src/test/resources/orders.json", 1, "items[0].name");
+	     *
+	     * @param filePath The absolute or relative path to the JSON array file.
+	     * @param index    The 0-based index of the object within the root array.
+	     * @param keyPath  The dot-separated path to the desired value (e.g., "user.address.city").
+	     * Also supports array indexing (e.g., "items[0].name").
+	     * @return The extracted value as a String. Returns an empty string if the value is null or the path is not found.
+	     * @throws RuntimeException If the file cannot be loaded, is not a valid JSON array,
+	     * or if the index is out of bounds.
+	     */
+	    
+	    public static String getValue(String filePath, int index, String keyPath) {
+	        ArrayNode jsonArray = loadAndCacheJsonArray(filePath);
+
+	        if (index < 0 || index >= jsonArray.size()) {
+	            throw new IndexOutOfBoundsException(
+	                "Index " + index + " is out of bounds for file '" + filePath
+	                + "'. Array size is " + jsonArray.size() + "."
+	            );
+	        }
+
+	        JsonNode targetObject = jsonArray.get(index);
+
+	        // Convert the custom keyPath into a standard JSON Pointer string.
+	        // For example, "user.items[0].name" becomes "/user/items/0/name".
+	        // This allows us to use Jackson's efficient `at()` method.
+	        String jsonPointerPath = "/" + keyPath.replace('.', '/').replaceAll("\\[(\\d+)\\]", "/$1");
+
+	        // Use `at()` to navigate the path. It safely handles missing paths
+	        // by returning a special MissingNode instead of throwing an exception.
+	        JsonNode resultNode = targetObject.at(jsonPointerPath);
+
+	        // If the path does not exist (isMissingNode) or the value is explicitly null, return an empty string.
+	        if (resultNode.isMissingNode() || resultNode.isNull()) {
+	            return "";
+	        }
+
+	        return resultNode.asText();
+	    }
+	    
+	    
+	    /**
+	     * Loads a JSON file from a given path, expecting a root-level array.
+	     * Caches the result to avoid redundant file I/O. This method is synchronized
+	     * to ensure it's thread-safe.
+	     *
+	     * @param filePath The path to the JSON file.
+	     * @return The parsed ArrayNode from the file.
+	     */
+	    private static synchronized ArrayNode loadAndCacheJsonArray(String filePath) {
+	        // Return from cache if already loaded
+	        if (cachedJsonData.containsKey(filePath)) {
+	            return cachedJsonData.get(filePath);
+	        }
+
+	        try {
+	            File file = new File(filePath);
+	            JsonNode rootNode = objectMapper.readTree(file);
+
+	            if (rootNode.isArray()) {
+	                ArrayNode arrayNode = (ArrayNode) rootNode;
+	                cachedJsonData.put(filePath, arrayNode); // Cache the result
+	                return arrayNode;
+	            } else {
+	                throw new IllegalArgumentException(
+	                    "JSON file '" + filePath + "' does not contain a root-level array."
+	                );
+	            }
+	        } catch (IOException e) {
+	            throw new RuntimeException("Error loading or parsing JSON file at '" + filePath + "'.", e);
+	        }
+	    }
+	    // validate 2 arraylist 
+	    public static boolean validateListByPosition(ArrayList<String> expected, ArrayList<String> actual) {
+	        if (expected == null || actual == null) {
+	            System.out.println("One of the lists is null.");
+	            return false;
+	        }
+
+	        if (expected.size() != actual.size()) {
+	            System.out.println("List sizes are different. Expected: " + expected.size() + ", Actual: " + actual.size());
+	            return false;
+	        }
+
+	        boolean allMatch = true;
+
+	        for (int i = 0; i < expected.size(); i++) {
+	            String expectedItem = expected.get(i).trim();
+	            String actualItem = actual.get(i).trim();
+
+	            if (!expectedItem.equals(actualItem)) {
+	                System.out.println("Mismatch at position " + i + ": Expected '" + expectedItem + "', but got '" + actualItem + "'");
+	                allMatch = false;
+	            }
+	        }
+
+	        return allMatch;
+	    }
+
 }

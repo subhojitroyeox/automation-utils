@@ -493,7 +493,15 @@ private static String escapeForXPathLiteral(String input) {
         }
     }
 
-
+    public void navigateViaBreadcrumbTo(String breadcrumbText) {
+        try {
+            WebElement breadcrumb = driver.findElement(By.xpath("//*[@class='k-breadcrumb-item-text' and normalize-space(text()) = '"+breadcrumbText+"']"));
+            wait.until(ExpectedConditions.elementToBeClickable(breadcrumb));
+            elementClick(breadcrumb);
+        } catch (Exception e) {
+            System.out.println("Breadcrumb with text '" + breadcrumbText + "' not found.");
+        }
+    }
 
 
 }
