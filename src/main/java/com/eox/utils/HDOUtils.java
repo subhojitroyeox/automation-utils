@@ -34,14 +34,7 @@ public class HDOUtils {
     	return SupportUtils.validateListByPosition(getMenuItemsByRole(roleName , jsonFilePath), allTabTitle);
     	
     }      
-    
-    // Login to the HDO application
-    public static void loginToApplication(String uname, String password) {
-    	CommonFunctionUtils.enterText(driver.findElement(By.id("username")),uname);
-		CommonFunctionUtils.enterText(driver.findElement(By.id("password")),password);
-		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));
-    }
-    
+      
  // input functions
 	public static void openTiles(String tilesTitle, String tilesButtonName) { 		
     	CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//a[contains(@title,'"+tilesTitle+"') and contains(normalize-space(), '"+tilesButtonName+"')]")));

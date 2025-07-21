@@ -22,31 +22,11 @@ public class CommonFunctionUtils {
 	// protected WebDriver driver;
 	private static WebDriverWait wait;
 	private static WebDriver driver;
-
 	public CommonFunctionUtils(WebDriver driver, int waitTime) {
 		CommonFunctionUtils.driver = driver;
 		wait = new WebDriverWait(driver, Duration.ofSeconds(waitTime));
+		
 	}
-
-	// Login to the application
-	public static void loginToApplication(String uname, String password) {
-		CommonFunctionUtils.enterText(driver.findElement(By.id("username")), uname);
-		CommonFunctionUtils.enterText(driver.findElement(By.id("password")), password);
-		try {
-			CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));// this is for internal
-		} catch (Exception e) {
-			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));// this is for HDO
-		}
-
-	}
-
-	// Login to the application - temp fix for HDO - 08-07-2025
-	public static void loginToApplication(String uname, String password, String productName) {
-		CommonFunctionUtils.enterText(driver.findElement(By.id("username")), uname);
-		CommonFunctionUtils.enterText(driver.findElement(By.id("password")), password);
-		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));// this is for internal
-	}
-
 	// Click method with explicit wait
 	public static void elementClick(WebElement element) {
 		wait.until(ExpectedConditions.elementToBeClickable(element));
