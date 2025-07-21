@@ -30,8 +30,8 @@ public class HDOUtils {
     	for (WebElement ele:driver.findElements(By.xpath("//*[@class='card-title']"))) {
     		allTabTitle.add(ele.getText());
     	}
-    	getMenuItemsByRole("roleKey", "jsonFilePath");
-    	return SupportUtils.validateListByPosition(getMenuItemsByRole("roleKey", "jsonFilePath"), allTabTitle);
+    	getMenuItemsByRole(roleName , jsonFilePath);
+    	return SupportUtils.validateListByPosition(getMenuItemsByRole(roleName , jsonFilePath), allTabTitle);
     	
     }      
     
