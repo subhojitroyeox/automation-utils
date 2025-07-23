@@ -139,8 +139,12 @@ public class SupportUtils {
 
 	    public static ExtentReports getInstance() {
 	        if (extent == null) {
-	           String reportPath = System.getProperty("user.dir") + "/test-output/Functional/Functional_Report.html";
-	            ExtentSparkReporter spark = new ExtentSparkReporter(reportPath)
+	        	System.out.println("this is calling");
+	        	String filePath = Paths.get(System.getProperty("user.dir"), "test-output", "Functional", "Functional_Report.html").toAbsolutePath().toString();
+
+	           String reportPath = filePath;
+	           System.out.println("this is the path:"+reportPath); 
+	           ExtentSparkReporter spark = new ExtentSparkReporter(reportPath)
 	                    .viewConfigurer()
 	                    .viewOrder()
 	                    .as(new ViewName[]{ViewName.DASHBOARD, ViewName.TEST})
