@@ -505,7 +505,7 @@ public class CommonFunctionUtils {
         }
     }
 
-	public void navigateViaBreadcrumbTo(String breadcrumbText) {
+	public static void navigateViaBreadcrumbTo(String breadcrumbText) {
 		try {
 			WebElement breadcrumb = driver.findElement(By.xpath(
 					"//*[@class='k-breadcrumb-item-text' and normalize-space(text()) = '" + breadcrumbText + "']"));
