@@ -22,12 +22,37 @@ public class CommonFunctionUtils {
 	// protected WebDriver driver;
 	private static WebDriverWait wait;
 	private static WebDriver driver;
+
 	public CommonFunctionUtils(WebDriver driver, int waitTime) {
 		CommonFunctionUtils.driver = driver;
 		wait = new WebDriverWait(driver, Duration.ofSeconds(waitTime));
-		
 	}
+
+	// Login to the application
+	public static void loginToApplication(String uname, String password) {
+		CommonFunctionUtils.enterText(driver.findElement(By.id("username")), uname);
+		CommonFunctionUtils.enterText(driver.findElement(By.id("password")), password);
+		try {
+			CommonFunctionUtils.elementClick(driver.findElement(By.id("kc-login")));// this is for internal
+		} catch (Exception e) {
+			CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));// this is for HDO
+		}
+
+	}
+
+	// Login to the application - temp fix for HDO - 08-07-2025
+	public static void loginToApplication(String uname, String password, String productName) {
+		CommonFunctionUtils.enterText(driver.findElement(By.id("username")), uname);
+		CommonFunctionUtils.enterText(driver.findElement(By.id("password")), password);
+		CommonFunctionUtils.elementClick(driver.findElement(By.xpath("//button")));// this is for internal
+	}
+
 	// Click method with explicit wait
+	/**
+	 * This method waits for the element to be clickable and then clicks on it.
+	 * It is a utility method to ensure that the element is ready for interaction
+	 * @param element
+	 */
 	public static void elementClick(WebElement element) {
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		SupportUtils.safeClick(element, driver);
@@ -62,7 +87,6 @@ public class CommonFunctionUtils {
 
 		elementClick(driver.findElement(By.xpath("//*[contains(text(),'" + headerLavel
 				+ "')]/following::input[contains(@id,'" + type + "')and @type='radio'] ")));
-
 	}
 
 	// Enter text method
@@ -118,7 +142,6 @@ public class CommonFunctionUtils {
 			CommonFunctionUtils.elementClick(driver.findElement(
 					By.xpath("//*[text()='" + dashboardTitle + "']/..//i[contains(@class,'fa fa-file-exce')]")));
 		}
-
 	}
 
 	// Get text from element
@@ -160,7 +183,6 @@ public class CommonFunctionUtils {
 	}
 
 	// open an app from side panel
-
 	public static String launchAnApp(String appName, String tabName) {
 		elementClick(driver.findElement(By.xpath("//div[contains(@class,'osjs-panel-my-home')]//i"))); // open side bar
 		elementClick(driver.findElement(By.xpath("//div[@class='logo-here']/img"))); // open side bar
@@ -186,7 +208,6 @@ public class CommonFunctionUtils {
 	}
 
 	// select function
-
 	public static void selectItemFromDropdown(String dropdownItem, String dropdownMenuItem) {
 		SupportUtils.waitFor(1500);
 		elementClick(driver.findElement(By.xpath("//*[contains(text(),'" + dropdownItem
@@ -212,13 +233,11 @@ public class CommonFunctionUtils {
 
 	// input functions
 	public static void addTextToTheInputField(String inputItem, String inputValue) {
-
 		enterText(driver.findElement(By.xpath("//*[contains(text(),'" + inputItem + "')]/..//input[@type='text']")),
 				inputValue);
 	}
 
 	public static void addEmailToTheInputField(String inputItem, String inputValue) {
-
 		enterText(driver.findElement(By.xpath("//*[contains(text(),'" + inputItem + "')]/..//input[@type='email']")),
 				inputValue);
 	}
@@ -398,125 +417,121 @@ public class CommonFunctionUtils {
 
 	// This is for listview purpose - 08-07-2025
 
-
-/**
-     * Searches for a record in a list view and performs an action on it. This
-     * method locates the list view by its ID, searches for the record by its name,
-     * and performs the specified action (click or double-click) on the record.
-     * 
-     * @param recordName (the name of the record to search for)
-     * @param actionType ("edit", "delete", "doubleClick")
-     * @throws NoSuchElementException if the record is not found.
-     * @author harshakr
-     */
-    public static void searchAndSelectListViewRecord(String recordName, String action, 
-            String actionType) {
-        try {
-            WebElement listViewEle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".oxGrid")));
-            WebElement searchInput = listViewEle.findElement(By.cssSelector(".grid-serach-input"));
-
-            searchInput.clear();
-            searchInput.sendKeys(recordName);
-
-            // Wait for the record to appear
-            By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
-            WebElement record = wait.until(ExpectedConditions.visibilityOfElementLocated(recordLocator));
-
-            Actions actions = new Actions(driver);
-            actions.moveToElement(record).perform(); // Hover over the record
-
-            switch (actionType) {
-                case "click":
-                    clickListViewActionButton(action); // Custom method to click the action button
-                    break;
-
-                case "doubleClick":
-                    elementDoubleClick(record); // Double click the record
-                    break;
-
-                default:
-                    System.out.println("Invalid action type specified: " + actionType);
-            }
-
-        } catch (NoSuchElementException e) {
-            System.out.println("No record found with name: " + recordName);
-        } catch (TimeoutException e) {
-            System.out.println("Timeout while waiting for record: " + recordName);
-        } catch (StaleElementReferenceException e) {
-            System.out.println("Stale element reference while searching for record: " + recordName);
-        } catch (ElementNotInteractableException e) {
-            System.out.println("Element not interactable while searching for record: " + recordName);
-        } catch (UnsupportedOperationException e) {
-            System.out.println("Unsupported operation while searching for record: " + recordName);
-        } catch (Exception e) {
-            System.out.println("Error while searching for record: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Clicks an action button in the list view. This method first checks if the
-     * "Show more options" button is displayed, clicks it if available, and then
-     * clicks the specified action button. If the "Show more options" button is not
-     * displayed, it directly attempts to click the specified action button.
-     * 
-     * @param actionButtonName (the name of the action button to click like "Edit",
-     *                         "Delete", etc.)
-     * @throws NoSuchElementException          if the action button is not found.
-     * @throws TimeoutException                if the action button is not clickable
-     *                                         within the wait time.
-     * @throws StaleElementReferenceException  if the action button reference
-     *                                         becomes stale.
-     * @throws ElementNotInteractableException if the action button is not
-     *                                         interactable.
-     * @throws UnsupportedOperationException   if the operation is not supported.
-     * @throws Exception                       for any other unexpected errors.
-     * 
-     * @author harshakr
-     */
-    public static void clickListViewActionButton(String actionButtonName) {
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".actionButtons")));
-            List<WebElement> actionButtons = driver.findElements(By.cssSelector(".actionButtons"));
-
-            for (WebElement button : actionButtons) {
-                if (button.getDomAttribute("title").contains("Show more options")) {
-                    System.out.println("Clicking on 'Show more options' button.");
-                    elementClick(button);
-                    return;
-                }
-            }
-            System.out.println("No 'Show more options' button found, proceeding to click the action button directly.");
-
-            // Find and click the desired action button
-            elementClick(driver.findElement(By.xpath("//button[@title='" + actionButtonName + "' and contains(@class, 'actionButtons')]")));
-
-        } catch (NoSuchElementException e) {
-            System.out.println("No action button found in the list view.");
-        } catch (TimeoutException e) {
-            System.out.println("Timeout while waiting for record: " + actionButtonName);
-        } catch (StaleElementReferenceException e) {
-            System.out.println("Stale element reference while getting action button in the list view.");
-        } catch (ElementNotInteractableException e) {
-            System.out.println("Element not interactable while getting action button in the list view.");
-        } catch (UnsupportedOperationException e) {
-            System.out.println("Unsupported operation while getting action button in the list view.");
-        } catch (Exception e) {
-            System.out.println("Error while getting action button in the list view: " + e.getMessage());
-        }
-    }
-
-	public static void navigateViaBreadcrumbTo(String breadcrumbText) {
+	/**
+	 * This method is no longer used and has been replaced by {@code} searchAndActOnListViewRecord
+	 * 
+	 * @deprecated
+	 * Searches for a record in a list view and performs an action on it. This
+	 * method locates the list view by its ID, searches for the record by its name,
+	 * and performs the specified action (click or double-click) on the record.
+	 * 
+	 * @param recordName (the name of the record to search for)
+	 * @param actionType ("edit", "delete", "doubleClick")
+	 * @throws NoSuchElementException if the record is not found.
+	 * @author harshakr
+	 */
+	public static void searchAndSelectListViewRecord(String recordName, String action, 
+			String actionType) {
 		try {
-			WebElement breadcrumb = driver.findElement(By.xpath(
-					"//*[@class='k-breadcrumb-item-text' and normalize-space(text()) = '" + breadcrumbText + "']"));
-			wait.until(ExpectedConditions.elementToBeClickable(breadcrumb));
-			elementClick(breadcrumb);
+			WebElement listViewEle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".oxGrid")));
+			WebElement searchInput = listViewEle.findElement(By.cssSelector(".grid-serach-input"));
+
+			searchInput.clear();
+			searchInput.sendKeys(recordName);
+
+			// Wait for the record to appear
+			By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
+			WebElement record = wait.until(ExpectedConditions.visibilityOfElementLocated(recordLocator));
+
+			Actions actions = new Actions(driver);
+			actions.moveToElement(record).perform(); // Hover over the record
+
+			switch (actionType) {
+			    case "click":
+			        clickListViewActionButton(action); // Custom method to click the action button
+			        break;
+
+			    case "doubleClick":
+			    	elementDoubleClick(record); // Double click the record
+			        break;
+
+			    default:
+			        System.out.println("Invalid action type specified: " + actionType);
+			}
+
+		} catch (NoSuchElementException e) {
+			System.out.println("No record found with name: " + recordName);
+		} catch (TimeoutException e) {
+			System.out.println("Timeout while waiting for record: " + recordName);
+		} catch (StaleElementReferenceException e) {
+			System.out.println("Stale element reference while searching for record: " + recordName);
+		} catch (ElementNotInteractableException e) {
+			System.out.println("Element not interactable while searching for record: " + recordName);
+		} catch (UnsupportedOperationException e) {
+			System.out.println("Unsupported operation while searching for record: " + recordName);
 		} catch (Exception e) {
-			System.out.println("Breadcrumb with text '" + breadcrumbText + "' not found.");
+			System.out.println("Error while searching for record: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Clicks an action button in the list view. This method first checks if the
+	 * "Show more options" button is displayed, clicks it if available, and then
+	 * clicks the specified action button. If the "Show more options" button is not
+	 * displayed, it directly attempts to click the specified action button.
+	 * 
+	 * @param actionButtonName (the name of the action button to click like "Edit",
+	 *                         "Delete", etc.)
+	 * @throws NoSuchElementException          if the action button is not found.
+	 * @throws TimeoutException                if the action button is not clickable
+	 *                                         within the wait time.
+	 * @throws StaleElementReferenceException  if the action button reference
+	 *                                         becomes stale.
+	 * @throws ElementNotInteractableException if the action button is not
+	 *                                         interactable.
+	 * @throws UnsupportedOperationException   if the operation is not supported.
+	 * @throws Exception                       for any other unexpected errors.
+	 * 
+	 * @author harshakr
+	 */
+	public static void clickListViewActionButton(String actionButtonName) {
+		try {
+			wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".actionButtons")));
+			List<WebElement> actionButtons = driver.findElements(By.cssSelector(".actionButtons"));
+
+			for (WebElement button : actionButtons) {
+				if (button.getDomAttribute("title").contains("Show more options")) {
+					System.out.println("Clicking on 'Show more options' button.");
+					elementClick(button);
+					return;
+				}
+			}
+			System.out.println("No 'Show more options' button found, proceeding to click the action button directly.");
+
+			// Find and click the desired action button
+			elementClick(driver.findElement(
+					By.xpath("//button[@title='" + actionButtonName + "' and contains(@class, 'actionButtons')]")));
+
+		} catch (NoSuchElementException e) {
+			System.out.println("No action button found in the list view.");
+		} catch (TimeoutException e) {
+			System.out.println("Timeout while waiting for record: " + actionButtonName);
+		} catch (StaleElementReferenceException e) {
+			System.out.println("Stale element reference while getting action button in the list view.");
+		} catch (ElementNotInteractableException e) {
+			System.out.println("Element not interactable while getting action button in the list view.");
+		} catch (UnsupportedOperationException e) {
+			System.out.println("Unsupported operation while getting action button in the list view.");
+		} catch (Exception e) {
+			System.out.println("Error while getting action button in the list view: " + e.getMessage());
 		}
 	}
 	
 	/**
+	 * 
+	 * This method is no longer used and has been replaced by @searchAndActOnListViewRecord
+	 * 
+	 * @deprecated
 	 * This Feature is for those list views that have a search box for each column.
 	 * 
 	 * Verifies if a record exists in the list view based on the column name and
@@ -573,35 +588,207 @@ public class CommonFunctionUtils {
 			return false;
 		}
 	}
-	
-	
 
-    public static void popupAccept() {
+	/**
+	 * Navigates to a specific breadcrumb in the application.
+	 * This method searches for a breadcrumb element with the specified text
+	 * and clicks it if is found.
+	 * @param breadcrumbText The text of the breadcrumb to navigate to.
+	 * @author harshakr
+	 */
+	public void navigateViaBreadcrumbTo(String breadcrumbText) {
+		try {
+			WebElement breadcrumb = driver.findElement(By.xpath(
+					"//*[@class='k-breadcrumb-item-text' and normalize-space(text()) = '" + breadcrumbText + "']"));
+			wait.until(ExpectedConditions.elementToBeClickable(breadcrumb));
+			elementClick(breadcrumb);
+		} catch (Exception e) {
+			System.out.println("Breadcrumb with text '" + breadcrumbText + "' not found.");
+		}
+	}
+	
+	/**
+	 * Accepts a popup dialog if it is displayed.
+	 * Works for all kind of swal2 popups that have a confirm button.
+
+	 * @author harshakr
+	 */
+	public static void popupAccept() {
+		try {
+			WebElement popup = driver.findElement(By.cssSelector(".swal2-show button[style*=\"display: inline-block\"][class*=\"swal2-confirm\"]"));
+			if (popup.isDisplayed()) {
+				elementClick(popup);
+			}
+		} catch (NoSuchElementException e) {
+			System.out.println("No popup found to dismiss.");
+		} catch (Exception e) {
+			System.out.println("Error while dismissing popup: " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Clicks on the cancel button of a popup dialog if it is displayed.
+	 * Works for all kind of swal2 popups that have a cancel button.
+	 * @author harshakr
+	 */
+	public static void popupDismiss() {
+		try {
+			WebElement popup = driver.findElement(By.cssSelector(".swal2-show button[style*=\"display: inline-block\"][class*=\"swal2-cancel\"]"));
+			if (popup.isDisplayed()) {
+				elementClick(popup);
+			}
+		} catch (NoSuchElementException e) {
+			System.out.println("No popup found to dismiss.");
+		} catch (Exception e) {
+			System.out.println("Error while dismissing popup: " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * This is the main method for searching and acting on a record in a list view.
+	 * 
+     * Searches for a record in a list view using a general search input and performs a specified action.
+     * It attempts to find action buttons directly, then tries after hovering if necessary.
+     *
+     * @param driver The WebDriver instance.
+     * @param wait The WebDriverWait instance.
+     * @param recordName The name or text content of the record to find.
+     * @param actionType An Optional String indicating the type of action to perform on the record.
+     * Accepted values: "click" (for an action button), "doubleClick" (for the record itself).
+     * If empty, only verifies the record's presence.
+     * @param actionButtonName An Optional String representing the name of the action button to click,
+     * only applicable if actionType is "click".
+     * @return true if the record is found and the action (if specified) is performed successfully, false otherwise.
+     * 
+     * @author harshakr	
+     */
+    public static boolean searchAndActOnListViewRecord(String recordName, Optional<String> actionType,
+    		String actionButtonName) {
         try {
-            WebElement popup = driver.findElement(By.cssSelector(".swal2-show button[style*=\"display: inline-block\"][class*=\"swal2-confirm\"]"));
-            if (popup.isDisplayed()) {
-                elementClick(popup);
-            }
-        } catch (NoSuchElementException e) {
-            System.out.println("No popup found to dismiss.");
+            // 1. Locate the List View
+            WebElement listViewEle = driver.findElement(By.cssSelector(".oxGrid"));
+            System.out.println("List view element found.");
+
+            // 2. Perform General Search
+            System.out.println("Searching for record '" + recordName + "' using general search input.");
+            WebElement searchInput = listViewEle.findElement(By.cssSelector(".grid-serach-input"));
+            searchInput.clear();
+            searchInput.sendKeys(recordName);
+
+            // 3. Wait for the record to appear in the first row after search/filter
+            By recordLocator = By.xpath("//tr[@data-grid-row-index='0']//td[contains(text(),'" + recordName + "')]");
+            WebElement firstRowRecordCell = driver.findElement(recordLocator);
+
+            // Get the parent row element which contains the record cell and potentially action buttons
+            WebElement recordRow = firstRowRecordCell.findElement(By.xpath("./ancestor::tr[1]"));
+            	
+            performListViewAction(recordRow, firstRowRecordCell, recordName, actionType, actionButtonName);
+            
         } catch (Exception e) {
-            System.out.println("Error while dismissing popup: " + e.getMessage());
+            System.err.println("An unexpected error occurred while searching for record: " + recordName + ". Error: " + e.getMessage());
+            e.printStackTrace(); // Print stack trace for unknown errors
+            return false;
         }
+		return false;
     }
     
-    public static void popupDismiss() {
-        try {
-            WebElement popup = driver.findElement(By.cssSelector(".swal2-show button[style*=\"display: inline-block\"][class*=\"swal2-cancel\"]"));
-            if (popup.isDisplayed()) {
-                elementClick(popup);
-            }
-        } catch (NoSuchElementException e) {
-            System.out.println("No popup found to dismiss.");
-        } catch (Exception e) {
-            System.out.println("Error while dismissing popup: " + e.getMessage());
-        }
-    }
-    
-    
+	/**
+	 * Performs an action on a record in the list view based on the specified action type and button name.
+	 * This method checks if the record is present in the list view and performs the action accordingly.
+	 * @param recordRow The WebElement representing the row of the record in the list view.
+	 * @param firstRowRecordCell The WebElement representing the first cell of the record row.
+	 * @param recordName The name of the record to search for in the list view.
+	 * @param actionType An Optional String indicating the type of action to perform on the record.
+	 * Accepted values: "click" (for an action button), "doubleClick" (for the record itself).
+	 * If empty, only verifies the record's presence.
+	 * @param actionButtonName An Optional String representing the name of the action button to click,
+	 * 
+	 * @author harshakr
+	 */
+	private static boolean performListViewAction(WebElement recordRow, WebElement firstRowRecordCell, String recordName,
+			Optional<String> actionType, String actionButtonName) {
+		try {
+			if (firstRowRecordCell.isDisplayed() && firstRowRecordCell.getText().contains(recordName)) {
+				System.out.println("Record found in the list view: " + recordName);
 
+                // 1. Perform Action (based on actionType)
+                if (actionType.isPresent()) {
+                    String type = actionType.get();
+                    switch (type) {
+                        case "click":
+                        	List<WebElement> actionColumn = driver.findElements(By.cssSelector(".k-table-row th"));
+                        	boolean actionColumnFound = false;
+                        	
+                        	for (WebElement column : actionColumn) {
+								if (column.getDomAttribute("class").contains("k-grid-header-sticky")) {
+									actionColumnFound = true;
+									break;
+								}
+							}
+                        	
+                        	if(actionColumnFound == true) {
+                        		if(actionButtonName!=null) {
+									String btnName = actionButtonName;
+									System.out.println("Attempting to find action button '" + btnName + "' in the action column...");
+									try {
+										WebElement actionButton = recordRow.findElement(By.xpath("//button[@title='" + btnName + "']"));
+										if (actionButton.isDisplayed() && actionButton.isEnabled()) {
+											elementClick(actionButton); // Click the action button
+											System.out.println("Action '" + btnName + "' performed on the record: " + recordName);
+										} else {
+											System.out.println("Action button '" + btnName + "' found but not interactable for the record: " + recordName);
+											return false;
+										}
+									} catch (NoSuchElementException e) {
+										System.out.println("Action button '" + btnName + "' not found in the action column for the record: " + recordName);
+										return false; // Action button not found
+									}
+								} else {
+									System.out.println("Action type 'click' specified, but no actionButtonName provided.");
+									return false;
+								}								
+						// If action column is found, we can proceed with the action button click
+                        	}else if(actionColumnFound == false) {
+                        		Actions actions = new Actions(driver);
+                        		actions.moveToElement(recordRow).perform(); // Hover over the record row
+                        		clickListViewActionButton(actionButtonName);
+                        	}
+                            break;
+
+                        case "doubleClick":
+							// Perform double click on the record cell
+                        	elementDoubleClick(firstRowRecordCell); // Double click the record cell
+                        	SupportUtils.waitFor(1000); // Wait for any action to complete
+                            System.out.println("Double clicked the record: " + recordName);
+                            break;
+
+                        default:
+                            System.out.println("Invalid action type specified: " + type);
+                            return false;
+                    }
+                } else {
+                    System.out.println("No action type specified. Record verified.");
+                }
+                return true; // Record found and action (if any) performed
+            } else {
+                System.out.println("Record not found in the list view (or content mismatch): " + recordName);
+                return false;
+            }
+
+		} catch (NoSuchElementException e) {
+			System.err.println("No record found with name: " + recordName);
+		} catch (TimeoutException e) {
+			System.err.println("Timeout while waiting for record: " + recordName);
+		} catch (StaleElementReferenceException e) {
+			System.err.println("Stale element reference while searching for record: " + recordName);
+		} catch (ElementNotInteractableException e) {
+			System.err.println("Element not interactable while searching for record: " + recordName);
+		} catch (UnsupportedOperationException e) {
+			System.err.println("Unsupported operation while searching for record: " + recordName);
+		} catch (Exception e) {
+			System.err.println("Error while searching for record: " + e.getMessage());
+		}
+		return false;
+	}
+	
 }
