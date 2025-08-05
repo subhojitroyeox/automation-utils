@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,12 +22,13 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
@@ -139,12 +142,8 @@ public class SupportUtils {
 
 	    public static ExtentReports getInstance() {
 	        if (extent == null) {
-	        	System.out.println("this is calling");
-	        	String filePath = Paths.get(System.getProperty("user.dir"), "test-output", "Functional", "Functional_Report.html").toAbsolutePath().toString();
-
-	           String reportPath = filePath;
-	           System.out.println("this is the path:"+reportPath); 
-	           ExtentSparkReporter spark = new ExtentSparkReporter(reportPath)
+	           String reportPath = System.getProperty("user.dir") + "/test-output/Functional/Functional_Report.html";
+	            ExtentSparkReporter spark = new ExtentSparkReporter(reportPath)
 	                    .viewConfigurer()
 	                    .viewOrder()
 	                    .as(new ViewName[]{ViewName.DASHBOARD, ViewName.TEST})
@@ -335,5 +334,94 @@ public class SupportUtils {
 
 	        return allMatch;
 	    }
+	    
+	    /**
+	     * Downloads a file from the Downloads directory and returns its absolute path.
+	     * This method checks if the file exists and returns its path if found.
+	     * If the file does not exist, it returns null and prints a message.
+	     * 
+	     * @param fileName
+	     * @return
+	     * 
+	     * @throws IOException FileNotFoundException if the file does not exist in the Downloads directory.
+	     * 
+	     * @author harshakr
+	     */
+	    public static String downloadFile(WebElement downloadBtn, String fileName, long timeoutInSeconds) {
+	    	String downloadPath = System.getProperty("user.dir") + File.separator + "Downloads"
+					+ File.separator;
 
+	        // 1. Clean the download directory of any previous files to avoid false positives
+	        cleanDownloadDirectory(downloadPath);
+
+	        // 2. Click the download button to initiate the download
+	        CommonFunctionUtils.elementClick(downloadBtn);
+
+	        // Define the full path for the expected final file
+	        Path expectedFilePath = Paths.get(downloadPath, fileName);
+	        File downloadedFile = expectedFilePath.toFile();
+
+	        // 3. Use FluentWait to poll for the file's existence
+	        Wait<File> wait = new FluentWait<>(downloadedFile)
+	                .withTimeout(Duration.ofSeconds(timeoutInSeconds))
+	                .pollingEvery(Duration.ofMillis(500)) // Check every half-second
+	                .ignoring(Exception.class); // Ignore exceptions if the file doesn't exist yet
+
+	        try {
+	            wait.until(file -> {
+	                // First, check if the file exists
+	                if (file.exists()) {
+	                    // Then, check if there are any temporary files left in the directory
+	                    // This is the core of the "refresh and check again" logic
+	                    if (!hasTempFiles(downloadPath)) {
+	                        System.out.println("File " + fileName + " downloaded successfully.");
+	                        return true; // The file exists and no temporary files are present
+	                    }
+	                }
+	                System.out.println("Waiting for download to complete...");
+	                return false; // The file is not ready yet
+	            });
+	            return downloadedFile.getAbsolutePath();
+	        } catch (Exception e) {
+	            System.err.println("File download timed out or failed: " + fileName);
+	            return null;
+	        } 
+// Note: The following block is commented out to prevent file deletion during testing.	        
+//	        } finally {
+//	            // Clean up the file after the test
+//	            if (downloadedFile.exists()) {
+//	                 downloadedFile.delete();
+//	            }
+//	        }
+	    }
+	    
+	    /**
+	     * Checks if any temporary download files exist in the specified directory.
+	     * Temporary files often end with .tmp, .part, or .crdownload extensions.
+	     */
+	    private static boolean hasTempFiles(String directoryPath) {
+	        File downloadDir = new File(directoryPath);
+	        if (downloadDir.exists() && downloadDir.isDirectory()) {
+	            File[] files = downloadDir.listFiles((dir, name) ->
+	                    name.endsWith(".tmp") || name.endsWith(".part") || name.endsWith(".crdownload"));
+	            return files != null && files.length > 0;
+	        }
+	        return false;
+	    }
+
+	    /**
+	     * Deletes all files in the specified directory.
+	     * This is crucial to ensure a clean slate for each test.
+	     */
+	    private static void cleanDownloadDirectory(String directoryPath) {
+	        File downloadDir = new File(directoryPath);
+	        if (downloadDir.exists() && downloadDir.isDirectory()) {
+	            File[] files = downloadDir.listFiles();
+	            if (files != null) {
+	                for (File file : files) {
+	                    file.delete();
+	                }
+	            }
+	        }
+	    }
 }
